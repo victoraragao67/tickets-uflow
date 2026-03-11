@@ -1,7 +1,7 @@
 import { useStore } from '@/store';
 import { PRIORITY_CONFIG } from '@/types';
 import type { Demand } from '@/types';
-import { AlertCircle, Clock, GripVertical } from 'lucide-react';
+import { AlertCircle, Clock, GripVertical, Eye } from 'lucide-react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
@@ -30,6 +30,8 @@ export function KanbanCard({ demand }: Props) {
       ref={setNodeRef}
       style={style}
       className={`group relative rounded-lg bg-card p-3 cursor-pointer transition-all duration-150 ${
+        demand.isBlocked ? 'ring-1 ring-accent-blocked/30' : ''
+      } ${
         isDragging
           ? 'card-shadow-drag scale-[1.03] rotate-[2deg] z-50 opacity-90'
           : 'card-shadow hover:card-shadow-hover hover:-translate-y-px'
@@ -73,6 +75,11 @@ export function KanbanCard({ demand }: Props) {
       <div className="mt-2 flex items-center justify-between">
         <span className="text-[11px] text-muted-foreground">{client?.name || '—'}</span>
         <div className="flex items-center gap-1.5">
+          {demand.watchers.length > 0 && (
+            <span className="flex items-center gap-0.5 text-[11px] text-muted-foreground" title={`Watchers: ${demand.watchers.join(', ')}`}>
+              <Eye className="h-3 w-3" />{demand.watchers.length}
+            </span>
+          )}
           {demand.estimatedEffort && (
             <span className="flex items-center gap-0.5 text-[11px] text-muted-foreground text-tabular">
               <Clock className="h-3 w-3" />{demand.estimatedEffort}

@@ -11,6 +11,28 @@ interface Props {
   demands: Demand[];
 }
 
+const NEW_DEMAND_DEFAULTS = {
+  description: '',
+  expectedResult: '',
+  clientId: '',
+  demandTypeId: 'dt1',
+  priority: 'medium' as const,
+  assignee: '',
+  watchers: [] as string[],
+  tags: [] as string[],
+  startedAt: null,
+  finishedAt: null,
+  blockedAt: null,
+  estimatedEffort: '',
+  actualEffort: '',
+  isBlocked: false,
+  blockerReason: '',
+  blockedBy: '',
+  cancellationReason: '',
+  notes: '',
+  attachments: [] as string[],
+};
+
 export function KanbanColumn({ column, demands }: Props) {
   const { toggleColumnCollapse, addDemand } = useStore();
   const [creating, setCreating] = useState(false);
@@ -23,26 +45,7 @@ export function KanbanColumn({ column, demands }: Props) {
 
   const handleQuickCreate = () => {
     if (!newTitle.trim()) { setCreating(false); return; }
-    addDemand({
-      title: newTitle.trim(),
-      description: '',
-      clientId: '',
-      demandTypeId: 'dt1',
-      priority: 'medium',
-      assignee: '',
-      tags: [],
-      columnId: column.id,
-      startedAt: null,
-      finishedAt: null,
-      blockedAt: null,
-      estimatedEffort: '',
-      actualEffort: '',
-      isBlocked: false,
-      blockerReason: '',
-      cancellationReason: '',
-      notes: '',
-      attachments: [],
-    });
+    addDemand({ ...NEW_DEMAND_DEFAULTS, title: newTitle.trim(), columnId: column.id });
     setNewTitle('');
     setCreating(false);
   };

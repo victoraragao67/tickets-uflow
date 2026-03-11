@@ -1,7 +1,7 @@
 import { useStore } from '@/store';
-import { PRIORITY_CONFIG, BLOCKER_REASONS, CANCELLATION_REASONS } from '@/types';
+import { PRIORITY_CONFIG, BLOCKER_REASONS } from '@/types';
 import type { Priority } from '@/types';
-import { X, AlertCircle, Clock, MessageSquare, Activity } from 'lucide-react';
+import { X, AlertCircle, MessageSquare, Activity, FileText, User, Eye } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -18,6 +18,7 @@ export function DemandDetailModal({ demandId, onClose }: Props) {
   const demand = demands.find((d) => d.id === demandId);
   const [activeTab, setActiveTab] = useState<'details' | 'activity' | 'comments'>('details');
   const [commentText, setCommentText] = useState('');
+  const [watcherInput, setWatcherInput] = useState('');
 
   if (!demand) return null;
 
@@ -33,7 +34,35 @@ export function DemandDetailModal({ demandId, onClose }: Props) {
     setCommentText('');
   };
 
+  const addWatcher = () => {
+    if (!watcherInput.trim() || demand.watchers.includes(watcherInput.trim())) return;
+    updateDemand(demandId, { watchers: [...demand.watchers, watcherInput.trim()] });
+    setWatcherInput('');
+  };
+
+  const removeWatcher = (w: string) => {
+    updateDemand(demandId, { watchers: demand.watchers.filter((x) => x !== w) });
+  };
+
   const formatDate = (d: string | null) => d ? format(new Date(d), 'MMM d, yyyy HH:mm') : '—';
+
+  const TABS = [
+    { id: 'details' as const, icon: FileText, label: 'Details' },
+    { id: 'activity' as const, icon: Activity, label: 'Activity' },
+    { id: 'comments' as const, icon: MessageSquare, label: 'Comments', count: demandComments.length },
+  ];
+
+  // Render @mentions in comments
+  const renderContent = (text: string) => {
+    const parts = text.split(/(@\w+)/g);
+    return parts.map((part, i) =>
+      part.startsWith('@') ? (
+        <span key={i} className="text-primary font-medium">{part}</span>
+      ) : (
+        <span key={i}>{part}</span>
+      )
+    );
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={onClose}>
@@ -50,7 +79,7 @@ export function DemandDetailModal({ demandId, onClose }: Props) {
               value={demand.title}
               onChange={(e) => updateDemand(demandId, { title: e.target.value })}
             />
-            <div className="flex items-center gap-2 mt-2">
+            <div className="flex items-center gap-2 mt-2 flex-wrap">
               {demandType && (
                 <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium"
                   style={{ backgroundColor: `hsl(${demandType.color} / 0.12)`, color: `hsl(${demandType.color})` }}>
@@ -75,19 +104,18 @@ export function DemandDetailModal({ demandId, onClose }: Props) {
 
         {/* Tabs */}
         <div className="flex border-b border-border px-6 gap-4">
-          {(['details', 'activity', 'comments'] as const).map((tab) => (
+          {TABS.map((tab) => (
             <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-1.5 py-2.5 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === tab ? 'border-foreground text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'
+                activeTab === tab.id ? 'border-foreground text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'
               }`}
             >
-              {tab === 'activity' && <Activity className="h-3.5 w-3.5" />}
-              {tab === 'comments' && <MessageSquare className="h-3.5 w-3.5" />}
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
-              {tab === 'comments' && demandComments.length > 0 && (
-                <span className="text-[10px] bg-muted rounded-full px-1.5">{demandComments.length}</span>
+              <tab.icon className="h-3.5 w-3.5" />
+              {tab.label}
+              {tab.count != null && tab.count > 0 && (
+                <span className="text-[10px] bg-muted rounded-full px-1.5">{tab.count}</span>
               )}
             </button>
           ))}
@@ -108,6 +136,32 @@ export function DemandDetailModal({ demandId, onClose }: Props) {
                   />
                 </div>
                 <div>
+                  <label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Expected Result</label>
+                  <Textarea
+                    className="min-h-[80px] bg-input border-none text-sm resize-none"
+                    value={demand.expectedResult}
+                    onChange={(e) => updateDemand(demandId, { expectedResult: e.target.value })}
+                    placeholder="What is the expected outcome…"
+                  />
+                </div>
+
+                {/* Client Information */}
+                {client && (
+                  <div className="rounded-lg border border-border p-3 space-y-2">
+                    <div className="flex items-center gap-1.5">
+                      <User className="h-3.5 w-3.5 text-muted-foreground" />
+                      <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Client Information</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div><span className="text-muted-foreground">Name:</span> {client.name}</div>
+                      <div><span className="text-muted-foreground">Company:</span> {client.company}</div>
+                      <div><span className="text-muted-foreground">Contact:</span> {client.contactName}</div>
+                      <div><span className="text-muted-foreground">Email:</span> {client.email}</div>
+                    </div>
+                  </div>
+                )}
+
+                <div>
                   <label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Notes</label>
                   <Textarea
                     className="min-h-[80px] bg-input border-none text-sm resize-none"
@@ -116,6 +170,24 @@ export function DemandDetailModal({ demandId, onClose }: Props) {
                     placeholder="Internal notes…"
                   />
                 </div>
+
+                {/* Attachments */}
+                <div>
+                  <label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Attachments</label>
+                  {demand.attachments.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">No attachments.</p>
+                  ) : (
+                    <div className="space-y-1">
+                      {demand.attachments.map((a, i) => (
+                        <div key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <FileText className="h-3.5 w-3.5" />
+                          <span>{a}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 {demand.isBlocked && (
                   <div className="rounded-lg border border-accent-blocked/20 bg-accent-blocked/5 p-3">
                     <div className="flex items-center gap-1.5 mb-2">
@@ -123,6 +195,7 @@ export function DemandDetailModal({ demandId, onClose }: Props) {
                       <span className="text-sm font-medium text-accent-blocked">Blocker</span>
                     </div>
                     <p className="text-sm text-muted-foreground">{demand.blockerReason}</p>
+                    {demand.blockedBy && <p className="text-xs text-muted-foreground mt-1">Reported by: {demand.blockedBy}</p>}
                   </div>
                 )}
               </div>
@@ -156,6 +229,34 @@ export function DemandDetailModal({ demandId, onClose }: Props) {
                 <Field label="Assignee">
                   <Input className="h-9 bg-input border-none text-sm" value={demand.assignee} onChange={(e) => updateDemand(demandId, { assignee: e.target.value })} placeholder="Assign to…" />
                 </Field>
+
+                {/* Watchers */}
+                <Field label="Watchers">
+                  <div className="space-y-1.5">
+                    {demand.watchers.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {demand.watchers.map((w) => (
+                          <span key={w} className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[11px]">
+                            <Eye className="h-3 w-3 text-muted-foreground" />
+                            {w}
+                            <button onClick={() => removeWatcher(w)} className="text-muted-foreground hover:text-foreground ml-0.5">×</button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    <div className="flex gap-1">
+                      <Input
+                        className="h-8 bg-input border-none text-xs flex-1"
+                        value={watcherInput}
+                        onChange={(e) => setWatcherInput(e.target.value)}
+                        placeholder="Add watcher…"
+                        onKeyDown={(e) => { if (e.key === 'Enter') addWatcher(); }}
+                      />
+                      <button onClick={addWatcher} className="h-8 px-2 rounded-md bg-secondary text-secondary-foreground text-xs hover:opacity-90">Add</button>
+                    </div>
+                  </div>
+                </Field>
+
                 <Field label="Estimated Effort">
                   <Input className="h-9 bg-input border-none text-sm" value={demand.estimatedEffort} onChange={(e) => updateDemand(demandId, { estimatedEffort: e.target.value })} placeholder="e.g. 4h" />
                 </Field>
@@ -178,9 +279,9 @@ export function DemandDetailModal({ demandId, onClose }: Props) {
                       checked={demand.isBlocked}
                       onChange={(e) => {
                         if (e.target.checked) {
-                          updateDemand(demandId, { isBlocked: true, blockedAt: new Date().toISOString(), blockerReason: 'Waiting for client' });
+                          updateDemand(demandId, { isBlocked: true, blockedAt: new Date().toISOString(), blockerReason: 'Waiting for client', blockedBy: 'You' });
                         } else {
-                          updateDemand(demandId, { isBlocked: false, blockedAt: null, blockerReason: '' });
+                          updateDemand(demandId, { isBlocked: false, blockedAt: null, blockerReason: '', blockedBy: '' });
                         }
                       }}
                       className="rounded"
@@ -188,12 +289,20 @@ export function DemandDetailModal({ demandId, onClose }: Props) {
                     Mark as blocked
                   </label>
                   {demand.isBlocked && (
-                    <Select value={demand.blockerReason} onValueChange={(v) => updateDemand(demandId, { blockerReason: v })}>
-                      <SelectTrigger className="h-9 bg-input border-none text-sm mt-2"><SelectValue placeholder="Reason" /></SelectTrigger>
-                      <SelectContent>
-                        {Object.entries(BLOCKER_REASONS).map(([k, v]) => <SelectItem key={k} value={v}>{v}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
+                    <div className="space-y-2 mt-2">
+                      <Select value={demand.blockerReason} onValueChange={(v) => updateDemand(demandId, { blockerReason: v })}>
+                        <SelectTrigger className="h-9 bg-input border-none text-sm"><SelectValue placeholder="Reason" /></SelectTrigger>
+                        <SelectContent>
+                          {Object.entries(BLOCKER_REASONS).map(([k, v]) => <SelectItem key={k} value={v}>{v}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                      <Input
+                        className="h-9 bg-input border-none text-sm"
+                        value={demand.blockedBy}
+                        onChange={(e) => updateDemand(demandId, { blockedBy: e.target.value })}
+                        placeholder="Blocked by…"
+                      />
+                    </div>
                   )}
                 </div>
               </div>
@@ -205,7 +314,12 @@ export function DemandDetailModal({ demandId, onClose }: Props) {
               {demandActivity.length === 0 && <p className="text-sm text-muted-foreground">No activity yet.</p>}
               {demandActivity.map((event) => (
                 <div key={event.id} className="flex items-start gap-3">
-                  <div className="mt-1.5 h-1.5 w-1.5 rounded-full bg-muted-foreground/40 shrink-0" />
+                  <div className={`mt-1.5 h-2 w-2 rounded-full shrink-0 ${
+                    event.type === 'blocked' ? 'bg-accent-blocked' :
+                    event.type === 'completed' ? 'bg-accent-low' :
+                    event.type === 'moved' ? 'bg-primary' :
+                    'bg-muted-foreground/40'
+                  }`} />
                   <div>
                     <p className="text-sm">{event.description}</p>
                     <p className="text-[11px] text-muted-foreground text-tabular">{formatDate(event.timestamp)} · {event.user}</p>
@@ -222,7 +336,7 @@ export function DemandDetailModal({ demandId, onClose }: Props) {
                   className="flex-1 bg-input border-none text-sm resize-none min-h-[60px]"
                   value={commentText}
                   onChange={(e) => setCommentText(e.target.value)}
-                  placeholder="Write a comment…"
+                  placeholder="Write a comment… Use @name to mention"
                   onKeyDown={(e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleSubmitComment(); }}
                 />
                 <button
@@ -239,7 +353,7 @@ export function DemandDetailModal({ demandId, onClose }: Props) {
                     <span className="text-sm font-medium">{c.user}</span>
                     <span className="text-[11px] text-muted-foreground text-tabular">{formatDate(c.timestamp)}</span>
                   </div>
-                  <p className="text-sm text-muted-foreground">{c.content}</p>
+                  <p className="text-sm text-muted-foreground">{renderContent(c.content)}</p>
                 </div>
               ))}
             </div>
