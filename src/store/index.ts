@@ -21,21 +21,21 @@ const DEFAULT_DEMAND_TYPES: DemandType[] = [
 ];
 
 const DEFAULT_CLIENTS: Client[] = [
-  { id: 'c1', name: 'Acme Corp', company: 'Acme Corporation', segment: 'Enterprise', contactName: 'John Smith', email: 'john@acme.com', phone: '+1 555-0101', notes: 'Key enterprise account', status: 'active', createdAt: '2024-01-15T10:00:00Z' },
-  { id: 'c2', name: 'TechStart', company: 'TechStart Inc', segment: 'Startup', contactName: 'Sarah Chen', email: 'sarah@techstart.io', phone: '+1 555-0102', notes: 'Growing startup, fast-paced', status: 'active', createdAt: '2024-02-20T10:00:00Z' },
-  { id: 'c3', name: 'GlobalRetail', company: 'Global Retail Ltd', segment: 'Retail', contactName: 'Marcus Brown', email: 'marcus@globalretail.com', phone: '+1 555-0103', notes: 'Large retail chain', status: 'active', createdAt: '2024-03-10T10:00:00Z' },
+  { id: 'c1', name: 'Acme Corp', company: 'Acme Corporation', segment: 'Enterprise', contactName: 'John Smith', email: 'john@acme.com', phone: '+1 555-0101', notes: 'Key enterprise account', status: 'active', createdAt: '2024-01-15T10:00:00Z', accountManager: 'Jordan Lee' },
+  { id: 'c2', name: 'TechStart', company: 'TechStart Inc', segment: 'Startup', contactName: 'Sarah Chen', email: 'sarah@techstart.io', phone: '+1 555-0102', notes: 'Growing startup, fast-paced', status: 'active', createdAt: '2024-02-20T10:00:00Z', accountManager: 'Sam Taylor' },
+  { id: 'c3', name: 'GlobalRetail', company: 'Global Retail Ltd', segment: 'Retail', contactName: 'Marcus Brown', email: 'marcus@globalretail.com', phone: '+1 555-0103', notes: 'Large retail chain', status: 'active', createdAt: '2024-03-10T10:00:00Z', accountManager: 'Alex Rivera' },
 ];
 
 const now = () => new Date().toISOString();
 
 const SAMPLE_DEMANDS: Demand[] = [
-  { id: 'd1', title: 'Fix API auth bug', description: 'Authentication tokens are expiring prematurely causing 401 errors for end users.', clientId: 'c1', demandTypeId: 'dt2', priority: 'urgent', assignee: 'Alex Rivera', tags: ['api', 'auth'], columnId: 'in_progress', order: 0, createdAt: '2024-06-01T09:00:00Z', startedAt: '2024-06-02T10:00:00Z', finishedAt: null, blockedAt: null, lastUpdated: '2024-06-03T14:00:00Z', estimatedEffort: '4h', actualEffort: '2h', isBlocked: false, blockerReason: '', cancellationReason: '', notes: '', attachments: [] },
-  { id: 'd2', title: 'Add export to CSV', description: 'Users need the ability to export reports to CSV format for offline analysis.', clientId: 'c2', demandTypeId: 'dt4', priority: 'medium', assignee: 'Jordan Lee', tags: ['export', 'reports'], columnId: 'todo', order: 0, createdAt: '2024-06-02T11:00:00Z', startedAt: null, finishedAt: null, blockedAt: null, lastUpdated: '2024-06-02T11:00:00Z', estimatedEffort: '8h', actualEffort: '', isBlocked: false, blockerReason: '', cancellationReason: '', notes: '', attachments: [] },
-  { id: 'd3', title: 'Dashboard loading slow', description: 'Main dashboard takes over 5 seconds to load for accounts with 1000+ records.', clientId: 'c1', demandTypeId: 'dt2', priority: 'high', assignee: 'Alex Rivera', tags: ['performance'], columnId: 'backlog', order: 0, createdAt: '2024-06-03T08:00:00Z', startedAt: null, finishedAt: null, blockedAt: null, lastUpdated: '2024-06-03T08:00:00Z', estimatedEffort: '16h', actualEffort: '', isBlocked: false, blockerReason: '', cancellationReason: '', notes: '', attachments: [] },
-  { id: 'd4', title: 'Onboarding flow redesign', description: 'Redesign the onboarding flow to reduce drop-off rate by 30%.', clientId: 'c3', demandTypeId: 'dt3', priority: 'medium', assignee: 'Sam Taylor', tags: ['ux', 'onboarding'], columnId: 'waiting', order: 0, createdAt: '2024-05-20T10:00:00Z', startedAt: '2024-05-22T09:00:00Z', finishedAt: null, blockedAt: '2024-06-01T10:00:00Z', lastUpdated: '2024-06-01T10:00:00Z', estimatedEffort: '40h', actualEffort: '12h', isBlocked: true, blockerReason: 'Waiting for client', cancellationReason: '', notes: 'Client needs to approve new mockups', attachments: [] },
-  { id: 'd5', title: 'SSO integration', description: 'Implement SAML-based SSO for enterprise clients.', clientId: 'c1', demandTypeId: 'dt4', priority: 'high', assignee: 'Jordan Lee', tags: ['sso', 'enterprise'], columnId: 'review', order: 0, createdAt: '2024-05-15T10:00:00Z', startedAt: '2024-05-18T09:00:00Z', finishedAt: null, blockedAt: null, lastUpdated: '2024-06-02T16:00:00Z', estimatedEffort: '24h', actualEffort: '20h', isBlocked: false, blockerReason: '', cancellationReason: '', notes: '', attachments: [] },
-  { id: 'd6', title: 'Update billing page copy', description: 'Update text on billing page per marketing team request.', clientId: 'c2', demandTypeId: 'dt5', priority: 'low', assignee: 'Sam Taylor', tags: ['copy'], columnId: 'done', order: 0, createdAt: '2024-05-10T10:00:00Z', startedAt: '2024-05-11T09:00:00Z', finishedAt: '2024-05-12T14:00:00Z', blockedAt: null, lastUpdated: '2024-05-12T14:00:00Z', estimatedEffort: '2h', actualEffort: '1.5h', isBlocked: false, blockerReason: '', cancellationReason: '', notes: '', attachments: [] },
-  { id: 'd7', title: 'Investigate memory leak', description: 'Node process memory grows over time in production. Needs profiling.', clientId: 'c3', demandTypeId: 'dt6', priority: 'high', assignee: 'Alex Rivera', tags: ['devops', 'performance'], columnId: 'backlog', order: 1, createdAt: '2024-06-04T10:00:00Z', startedAt: null, finishedAt: null, blockedAt: null, lastUpdated: '2024-06-04T10:00:00Z', estimatedEffort: '12h', actualEffort: '', isBlocked: false, blockerReason: '', cancellationReason: '', notes: '', attachments: [] },
+  { id: 'd1', title: 'Fix API auth bug', description: 'Authentication tokens are expiring prematurely causing 401 errors for end users.', expectedResult: 'Tokens should persist for 24h without re-authentication.', clientId: 'c1', demandTypeId: 'dt2', priority: 'urgent', assignee: 'Alex Rivera', watchers: ['Jordan Lee'], tags: ['api', 'auth'], columnId: 'in_progress', order: 0, createdAt: '2024-06-01T09:00:00Z', startedAt: '2024-06-02T10:00:00Z', finishedAt: null, blockedAt: null, lastUpdated: '2024-06-03T14:00:00Z', estimatedEffort: '4h', actualEffort: '2h', isBlocked: false, blockerReason: '', blockedBy: '', cancellationReason: '', notes: '', attachments: [] },
+  { id: 'd2', title: 'Add export to CSV', description: 'Users need the ability to export reports to CSV format for offline analysis.', expectedResult: 'A download button on the reports page that generates a CSV file.', clientId: 'c2', demandTypeId: 'dt4', priority: 'medium', assignee: 'Jordan Lee', watchers: [], tags: ['export', 'reports'], columnId: 'todo', order: 0, createdAt: '2024-06-02T11:00:00Z', startedAt: null, finishedAt: null, blockedAt: null, lastUpdated: '2024-06-02T11:00:00Z', estimatedEffort: '8h', actualEffort: '', isBlocked: false, blockerReason: '', blockedBy: '', cancellationReason: '', notes: '', attachments: [] },
+  { id: 'd3', title: 'Dashboard loading slow', description: 'Main dashboard takes over 5 seconds to load for accounts with 1000+ records.', expectedResult: 'Dashboard loads in under 2 seconds for all account sizes.', clientId: 'c1', demandTypeId: 'dt2', priority: 'high', assignee: 'Alex Rivera', watchers: ['Sam Taylor'], tags: ['performance'], columnId: 'backlog', order: 0, createdAt: '2024-06-03T08:00:00Z', startedAt: null, finishedAt: null, blockedAt: null, lastUpdated: '2024-06-03T08:00:00Z', estimatedEffort: '16h', actualEffort: '', isBlocked: false, blockerReason: '', blockedBy: '', cancellationReason: '', notes: '', attachments: [] },
+  { id: 'd4', title: 'Onboarding flow redesign', description: 'Redesign the onboarding flow to reduce drop-off rate by 30%.', expectedResult: 'New onboarding with fewer steps and higher completion rate.', clientId: 'c3', demandTypeId: 'dt3', priority: 'medium', assignee: 'Sam Taylor', watchers: [], tags: ['ux', 'onboarding'], columnId: 'waiting', order: 0, createdAt: '2024-05-20T10:00:00Z', startedAt: '2024-05-22T09:00:00Z', finishedAt: null, blockedAt: '2024-06-01T10:00:00Z', lastUpdated: '2024-06-01T10:00:00Z', estimatedEffort: '40h', actualEffort: '12h', isBlocked: true, blockerReason: 'Waiting for client', blockedBy: 'Sam Taylor', cancellationReason: '', notes: 'Client needs to approve new mockups', attachments: [] },
+  { id: 'd5', title: 'SSO integration', description: 'Implement SAML-based SSO for enterprise clients.', expectedResult: 'Enterprise users can log in via their corporate SSO provider.', clientId: 'c1', demandTypeId: 'dt4', priority: 'high', assignee: 'Jordan Lee', watchers: ['Alex Rivera'], tags: ['sso', 'enterprise'], columnId: 'review', order: 0, createdAt: '2024-05-15T10:00:00Z', startedAt: '2024-05-18T09:00:00Z', finishedAt: null, blockedAt: null, lastUpdated: '2024-06-02T16:00:00Z', estimatedEffort: '24h', actualEffort: '20h', isBlocked: false, blockerReason: '', blockedBy: '', cancellationReason: '', notes: '', attachments: [] },
+  { id: 'd6', title: 'Update billing page copy', description: 'Update text on billing page per marketing team request.', expectedResult: 'Billing page reflects the new brand messaging.', clientId: 'c2', demandTypeId: 'dt5', priority: 'low', assignee: 'Sam Taylor', watchers: [], tags: ['copy'], columnId: 'done', order: 0, createdAt: '2024-05-10T10:00:00Z', startedAt: '2024-05-11T09:00:00Z', finishedAt: '2024-05-12T14:00:00Z', blockedAt: null, lastUpdated: '2024-05-12T14:00:00Z', estimatedEffort: '2h', actualEffort: '1.5h', isBlocked: false, blockerReason: '', blockedBy: '', cancellationReason: '', notes: '', attachments: [] },
+  { id: 'd7', title: 'Investigate memory leak', description: 'Node process memory grows over time in production. Needs profiling.', expectedResult: 'Root cause identified and memory usage stabilized.', clientId: 'c3', demandTypeId: 'dt6', priority: 'high', assignee: 'Alex Rivera', watchers: [], tags: ['devops', 'performance'], columnId: 'backlog', order: 1, createdAt: '2024-06-04T10:00:00Z', startedAt: null, finishedAt: null, blockedAt: null, lastUpdated: '2024-06-04T10:00:00Z', estimatedEffort: '12h', actualEffort: '', isBlocked: false, blockerReason: '', blockedBy: '', cancellationReason: '', notes: '', attachments: [] },
 ];
 
 const SAMPLE_ACTIVITY: ActivityEvent[] = [
@@ -51,6 +51,9 @@ interface Filters {
   priority: string;
   tags: string[];
   search: string;
+  blockedStatus: string; // 'all' | 'blocked' | 'not_blocked'
+  dateFrom: string;
+  dateTo: string;
 }
 
 interface AppState {
@@ -95,6 +98,9 @@ const DEFAULT_FILTERS: Filters = {
   priority: '',
   tags: [],
   search: '',
+  blockedStatus: '',
+  dateFrom: '',
+  dateTo: '',
 };
 
 let idCounter = 100;
@@ -134,7 +140,7 @@ export const useStore = create<AppState>((set, get) => ({
       get().addActivity({ demandId: id, type: 'assigned', description: `Assigned to ${updates.assignee}`, user: 'System' });
     }
     if (updates.isBlocked === true) {
-      get().addActivity({ demandId: id, type: 'blocked', description: `Blocked: ${updates.blockerReason || 'Unknown'}`, user: 'System' });
+      get().addActivity({ demandId: id, type: 'blocked', description: `Blocked: ${updates.blockerReason || 'Unknown'}`, user: updates.blockedBy || 'System' });
     }
     if (updates.isBlocked === false) {
       get().addActivity({ demandId: id, type: 'unblocked', description: 'Unblocked', user: 'System' });
@@ -149,7 +155,7 @@ export const useStore = create<AppState>((set, get) => ({
 
     const updates: Partial<Demand> = { columnId: toColumnId, order: newOrder, lastUpdated: n };
     if (toColumnId === 'in_progress' && !demand.startedAt) updates.startedAt = n;
-    if (toColumnId === 'done') updates.finishedAt = n;
+    if (toColumnId === 'done') { updates.finishedAt = n; }
     if (toColumnId === 'canceled' && !demand.cancellationReason) {
       // Will be prompted separately
     }
@@ -163,8 +169,10 @@ export const useStore = create<AppState>((set, get) => ({
       const toCol = get().columns.find((c) => c.id === toColumnId);
       get().addActivity({
         demandId,
-        type: 'moved',
-        description: `Moved from ${fromCol?.title || fromColumnId} to ${toCol?.title || toColumnId}`,
+        type: toColumnId === 'done' ? 'completed' : 'moved',
+        description: toColumnId === 'done'
+          ? `Completed (moved from ${fromCol?.title || fromColumnId})`
+          : `Moved from ${fromCol?.title || fromColumnId} to ${toCol?.title || toColumnId}`,
         user: 'System',
         meta: { from: fromColumnId, to: toColumnId },
       });

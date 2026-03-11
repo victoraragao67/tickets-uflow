@@ -21,6 +21,7 @@ export interface Client {
   notes: string;
   status: 'active' | 'inactive';
   createdAt: string;
+  accountManager?: string;
 }
 
 export interface ActivityEvent {
@@ -45,10 +46,12 @@ export interface Demand {
   id: string;
   title: string;
   description: string;
+  expectedResult: string;
   clientId: string;
   demandTypeId: string;
   priority: Priority;
   assignee: string;
+  watchers: string[];
   tags: string[];
   columnId: string;
   order: number;
@@ -63,6 +66,7 @@ export interface Demand {
   actualEffort: string;
   isBlocked: boolean;
   blockerReason: string;
+  blockedBy: string;
   cancellationReason: string;
   notes: string;
   attachments: string[];
