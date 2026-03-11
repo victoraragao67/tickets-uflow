@@ -7,6 +7,7 @@ import { AppSidebar } from "@/components/AppSidebar";
 import Index from "./pages/Index.tsx";
 import { ClientsPage } from "./pages/ClientsPage";
 import { ClientDetailPage } from "./pages/ClientDetailPage";
+import { MetricsPage } from "./pages/MetricsPage";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/clients" element={<ClientsPage />} />
               <Route path="/clients/:id" element={<ClientDetailPage />} />
+              <Route path="/metrics" element={<MetricsPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

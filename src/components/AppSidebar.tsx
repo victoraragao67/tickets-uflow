@@ -1,11 +1,12 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Users, Search, Settings } from 'lucide-react';
+import { LayoutDashboard, Users, Search, BarChart3 } from 'lucide-react';
 import { useStore } from '@/store';
 import { useState, useEffect, useRef } from 'react';
 
 const NAV_ITEMS = [
   { to: '/', icon: LayoutDashboard, label: 'Board' },
   { to: '/clients', icon: Users, label: 'Clients' },
+  { to: '/metrics', icon: BarChart3, label: 'Metrics' },
 ];
 
 export function AppSidebar() {
