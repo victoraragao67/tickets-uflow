@@ -12,8 +12,17 @@ type TabId = 'demands' | 'activity' | 'notes';
 export function ClientDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { clients, demands, demandTypes, columns, activity, updateClient, setSelectedDemand, selectedDemandId } = useStore();
-  const client = clients.find((c) => c.id === id);
   const [activeTab, setActiveTab] = useState<TabId>('demands');
+  const client = clients.find((c) => c.id === id);
+
+  const clientDemands = useMemo(() => client ? demands.filter((d) => d.clientId === client.id) : [], [client, demands]);
+
+  const avgCycleTime = useMemo(() => {
+    const completed = clientDemands.filter((d) => d.startedAt && d.finishedAt);
+    if (!completed.length) return null;
+    const total = completed.reduce((sum, d) => sum + differenceInHours(parseISO(d.finishedAt!), parseISO(d.startedAt!)), 0);
+    return total / completed.length;
+  }, [clientDemands]);
 
   if (!client) {
     return (
