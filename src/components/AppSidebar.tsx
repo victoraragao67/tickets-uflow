@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from 'react';
 const NAV_ITEMS = [
   { to: '/', icon: LayoutDashboard, label: 'Board' },
   { to: '/clients', icon: Users, label: 'Clients' },
+  { to: '/metrics', icon: BarChart3, label: 'Metrics' },
 ];
 
 export function AppSidebar() {
