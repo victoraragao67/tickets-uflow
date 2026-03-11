@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Users, Search, Settings } from 'lucide-react';
+import { LayoutDashboard, Users, Search, BarChart3 } from 'lucide-react';
 import { useStore } from '@/store';
 import { useState, useEffect, useRef } from 'react';
 
