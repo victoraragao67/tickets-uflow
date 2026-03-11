@@ -2,9 +2,9 @@ import { useMemo, useState } from 'react';
 import { useStore } from '@/store';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, Legend
+  PieChart, Pie, Cell, Legend, LineChart, Line
 } from 'recharts';
-import { differenceInHours, differenceInDays, parseISO } from 'date-fns';
+import { differenceInHours, parseISO, startOfWeek, format } from 'date-fns';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const CHART_COLORS = [
@@ -22,7 +22,7 @@ function hoursLabel(h: number) {
 }
 
 export function MetricsPage() {
-  const { demands, clients } = useStore();
+  const { demands, clients, demandTypes } = useStore();
   const [selectedClientId, setSelectedClientId] = useState<string>('all');
 
   const filtered = useMemo(() => {
@@ -30,7 +30,7 @@ export function MetricsPage() {
     return demands.filter((d) => d.clientId === selectedClientId);
   }, [demands, selectedClientId]);
 
-  // Lead Time: created → finished (only finished demands)
+  // Lead Time: created → finished
   const leadTimeData = useMemo(() => {
     const byClient: Record<string, number[]> = {};
     filtered.forEach((d) => {
@@ -64,7 +64,7 @@ export function MetricsPage() {
     }));
   }, [filtered, clients]);
 
-  // Throughput: completed demands per client
+  // Throughput per client (pie)
   const throughputData = useMemo(() => {
     const byClient: Record<string, number> = {};
     filtered.forEach((d) => {
@@ -76,7 +76,18 @@ export function MetricsPage() {
     return Object.entries(byClient).map(([name, count]) => ({ name, count }));
   }, [filtered, clients]);
 
-  // Blocked Time: accumulated blocked hours per client
+  // Throughput per week (line)
+  const throughputWeekly = useMemo(() => {
+    const byWeek: Record<string, number> = {};
+    filtered.forEach((d) => {
+      if (!d.finishedAt) return;
+      const week = format(startOfWeek(parseISO(d.finishedAt), { weekStartsOn: 1 }), 'MMM d');
+      byWeek[week] = (byWeek[week] || 0) + 1;
+    });
+    return Object.entries(byWeek).map(([week, count]) => ({ week, count })).sort((a, b) => a.week.localeCompare(b.week));
+  }, [filtered]);
+
+  // Blocked Time per client
   const blockedTimeData = useMemo(() => {
     const byClient: Record<string, number[]> = {};
     filtered.forEach((d) => {
@@ -93,6 +104,34 @@ export function MetricsPage() {
       count: vals.length,
     }));
   }, [filtered, clients]);
+
+  // Per type
+  const perTypeData = useMemo(() => {
+    const byType: Record<string, number> = {};
+    filtered.forEach((d) => {
+      const dt = demandTypes.find((t) => t.id === d.demandTypeId);
+      const name = dt?.label || 'Unknown';
+      byType[name] = (byType[name] || 0) + 1;
+    });
+    return Object.entries(byType).map(([name, count]) => ({ name, count }));
+  }, [filtered, demandTypes]);
+
+  // Per priority
+  const perPriorityData = useMemo(() => {
+    const byP: Record<string, number> = {};
+    filtered.forEach((d) => {
+      const label = d.priority.charAt(0).toUpperCase() + d.priority.slice(1);
+      byP[label] = (byP[label] || 0) + 1;
+    });
+    return Object.entries(byP).map(([name, count]) => ({ name, count }));
+  }, [filtered]);
+
+  const PRIORITY_COLORS: Record<string, string> = {
+    Urgent: 'hsl(0, 84%, 60%)',
+    High: 'hsl(30, 90%, 55%)',
+    Medium: 'hsl(48, 95%, 50%)',
+    Low: 'hsl(140, 50%, 60%)',
+  };
 
   // Summary stats
   const stats = useMemo(() => {
@@ -160,7 +199,7 @@ export function MetricsPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <XAxis dataKey="name" tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} />
                   <YAxis tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} />
-                  <Tooltip content={<MetricTooltip unit="hours" />} />
+                  <Tooltip content={<MetricTooltip />} />
                   <Bar dataKey="avgHours" name="Avg Lead Time" radius={[4, 4, 0, 0]}>
                     {leadTimeData.map((_, i) => (
                       <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
@@ -178,7 +217,7 @@ export function MetricsPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <XAxis dataKey="name" tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} />
                   <YAxis tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} />
-                  <Tooltip content={<MetricTooltip unit="hours" />} />
+                  <Tooltip content={<MetricTooltip />} />
                   <Bar dataKey="avgHours" name="Avg Cycle Time" radius={[4, 4, 0, 0]}>
                     {cycleTimeData.map((_, i) => (
                       <Cell key={i} fill={CHART_COLORS[(i + 1) % CHART_COLORS.length]} />
@@ -189,21 +228,47 @@ export function MetricsPage() {
             ) : <EmptyChart />}
           </ChartCard>
 
+          <ChartCard title="Tickets per Type" subtitle="Distribution by demand type">
+            {perTypeData.length ? (
+              <ResponsiveContainer width="100%" height={260}>
+                <BarChart data={perTypeData} margin={{ top: 4, right: 12, bottom: 4, left: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
+                  <YAxis tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} allowDecimals={false} />
+                  <Tooltip content={<SimpleTooltip />} />
+                  <Bar dataKey="count" name="Tickets" radius={[4, 4, 0, 0]}>
+                    {perTypeData.map((_, i) => (
+                      <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            ) : <EmptyChart />}
+          </ChartCard>
+
+          <ChartCard title="Tickets per Priority" subtitle="Distribution by priority level">
+            {perPriorityData.length ? (
+              <ResponsiveContainer width="100%" height={260}>
+                <PieChart>
+                  <Pie data={perPriorityData} dataKey="count" nameKey="name" cx="50%" cy="50%" outerRadius={90} innerRadius={50} paddingAngle={3}
+                    label={({ name, count }) => `${name}: ${count}`}>
+                    {perPriorityData.map((item) => (
+                      <Cell key={item.name} fill={PRIORITY_COLORS[item.name] || CHART_COLORS[0]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend wrapperStyle={{ fontSize: 12 }} />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : <EmptyChart />}
+          </ChartCard>
+
           <ChartCard title="Throughput by Client" subtitle="Completed demands per client">
             {throughputData.length ? (
               <ResponsiveContainer width="100%" height={260}>
                 <PieChart>
-                  <Pie
-                    data={throughputData}
-                    dataKey="count"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={90}
-                    innerRadius={50}
-                    paddingAngle={3}
-                    label={({ name, count }) => `${name}: ${count}`}
-                  >
+                  <Pie data={throughputData} dataKey="count" nameKey="name" cx="50%" cy="50%" outerRadius={90} innerRadius={50} paddingAngle={3}
+                    label={({ name, count }) => `${name}: ${count}`}>
                     {throughputData.map((_, i) => (
                       <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
                     ))}
@@ -215,6 +280,20 @@ export function MetricsPage() {
             ) : <EmptyChart />}
           </ChartCard>
 
+          <ChartCard title="Throughput per Week" subtitle="Completed demands over time">
+            {throughputWeekly.length ? (
+              <ResponsiveContainer width="100%" height={260}>
+                <LineChart data={throughputWeekly} margin={{ top: 4, right: 12, bottom: 4, left: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="week" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
+                  <YAxis tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} allowDecimals={false} />
+                  <Tooltip content={<SimpleTooltip />} />
+                  <Line type="monotone" dataKey="count" name="Completed" stroke={CHART_COLORS[0]} strokeWidth={2} dot={{ r: 4, fill: CHART_COLORS[0] }} />
+                </LineChart>
+              </ResponsiveContainer>
+            ) : <EmptyChart />}
+          </ChartCard>
+
           <ChartCard title="Blocked Time by Client" subtitle="Total hours demands were blocked">
             {blockedTimeData.length ? (
               <ResponsiveContainer width="100%" height={260}>
@@ -222,7 +301,7 @@ export function MetricsPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <XAxis dataKey="name" tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} />
                   <YAxis tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} />
-                  <Tooltip content={<MetricTooltip unit="hours" field="totalHours" />} />
+                  <Tooltip content={<MetricTooltip field="totalHours" />} />
                   <Bar dataKey="totalHours" name="Blocked Hours" radius={[4, 4, 0, 0]}>
                     {blockedTimeData.map((_, i) => (
                       <Cell key={i} fill={CHART_COLORS[(i + 4) % CHART_COLORS.length]} />
@@ -231,6 +310,31 @@ export function MetricsPage() {
                 </BarChart>
               </ResponsiveContainer>
             ) : <EmptyChart />}
+          </ChartCard>
+
+          <ChartCard title="Blocked Tickets" subtitle="Currently blocked demands">
+            {(() => {
+              const blocked = filtered.filter((d) => d.isBlocked);
+              if (!blocked.length) return <EmptyChart />;
+              return (
+                <div className="space-y-2 max-h-[260px] overflow-y-auto scrollbar-thin">
+                  {blocked.map((d) => {
+                    const client = clients.find((c) => c.id === d.clientId);
+                    return (
+                      <div key={d.id} className="flex items-center justify-between rounded-lg border border-accent-blocked/20 bg-accent-blocked/5 p-2.5">
+                        <div>
+                          <p className="text-sm font-medium">{d.title}</p>
+                          <p className="text-[11px] text-muted-foreground">{client?.name} · {d.blockerReason}</p>
+                        </div>
+                        <span className="text-[11px] text-accent-blocked font-medium">
+                          {d.blockedAt ? hoursLabel(differenceInHours(new Date(), parseISO(d.blockedAt))) : '—'}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })()}
           </ChartCard>
         </div>
       </div>
@@ -256,7 +360,7 @@ function EmptyChart() {
   );
 }
 
-function MetricTooltip({ active, payload, unit = 'hours', field = 'avgHours' }: any) {
+function MetricTooltip({ active, payload, field = 'avgHours' }: any) {
   if (!active || !payload?.length) return null;
   const data = payload[0].payload;
   return (
@@ -265,6 +369,17 @@ function MetricTooltip({ active, payload, unit = 'hours', field = 'avgHours' }: 
       <p className="text-muted-foreground mt-1">
         {hoursLabel(data[field])} ({data.count} demand{data.count !== 1 ? 's' : ''})
       </p>
+    </div>
+  );
+}
+
+function SimpleTooltip({ active, payload }: any) {
+  if (!active || !payload?.length) return null;
+  const data = payload[0].payload;
+  return (
+    <div className="rounded-lg border border-border bg-card px-3 py-2 text-xs shadow-lg">
+      <p className="font-medium text-foreground">{data.name || data.week}</p>
+      <p className="text-muted-foreground mt-1">{data.count} ticket{data.count !== 1 ? 's' : ''}</p>
     </div>
   );
 }

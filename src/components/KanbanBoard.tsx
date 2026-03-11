@@ -13,10 +13,34 @@ import {
   type DragEndEvent,
   type DragOverEvent,
 } from '@dnd-kit/core';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import type { Demand } from '@/types';
 import { KanbanCard } from './KanbanCard';
 import { Plus } from 'lucide-react';
+
+const NEW_DEMAND_DEFAULTS = {
+  title: 'New Demand',
+  description: '',
+  expectedResult: '',
+  clientId: '',
+  demandTypeId: 'dt1',
+  priority: 'medium' as const,
+  assignee: '',
+  watchers: [] as string[],
+  tags: [] as string[],
+  columnId: 'backlog',
+  startedAt: null,
+  finishedAt: null,
+  blockedAt: null,
+  estimatedEffort: '',
+  actualEffort: '',
+  isBlocked: false,
+  blockerReason: '',
+  blockedBy: '',
+  cancellationReason: '',
+  notes: '',
+  attachments: [] as string[],
+};
 
 export function KanbanBoard() {
   const { columns, demands, filters, selectedDemandId, setSelectedDemand, addDemand, moveDemand } = useStore();
@@ -26,38 +50,6 @@ export function KanbanBoard() {
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
   );
 
-  // Keyboard shortcut: 'c' to create
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'c' && !e.metaKey && !e.ctrlKey && !(e.target instanceof HTMLInputElement) && !(e.target instanceof HTMLTextAreaElement)) {
-        // Focus the first column's add button - simplified: just add to backlog
-        addDemand({
-          title: '',
-          description: '',
-          clientId: '',
-          demandTypeId: 'dt1',
-          priority: 'medium',
-          assignee: '',
-          tags: [],
-          columnId: 'backlog',
-          startedAt: null,
-          finishedAt: null,
-          blockedAt: null,
-          estimatedEffort: '',
-          actualEffort: '',
-          isBlocked: false,
-          blockerReason: '',
-          cancellationReason: '',
-          notes: '',
-          attachments: [],
-        });
-      }
-    };
-    // Disabled for now to avoid accidental creation
-    // window.addEventListener('keydown', handler);
-    // return () => window.removeEventListener('keydown', handler);
-  }, [addDemand]);
-
   // Filter demands
   const filteredDemands = demands.filter((d) => {
     if (filters.search && !d.title.toLowerCase().includes(filters.search.toLowerCase())) return false;
@@ -65,6 +57,10 @@ export function KanbanBoard() {
     if (filters.demandTypeId && d.demandTypeId !== filters.demandTypeId) return false;
     if (filters.priority && d.priority !== filters.priority) return false;
     if (filters.assignee && d.assignee !== filters.assignee) return false;
+    if (filters.blockedStatus === 'blocked' && !d.isBlocked) return false;
+    if (filters.blockedStatus === 'not_blocked' && d.isBlocked) return false;
+    if (filters.dateFrom && d.createdAt < filters.dateFrom) return false;
+    if (filters.dateTo && d.createdAt > filters.dateTo) return false;
     return true;
   });
 
@@ -85,7 +81,6 @@ export function KanbanBoard() {
     const activeDemand = demands.find((d) => d.id === activeId);
     if (!activeDemand) return;
 
-    // Determine target column
     const overColumn = columns.find((c) => c.id === overId);
     const overDemand = demands.find((d) => d.id === overId);
     const targetColumnId = overColumn?.id || overDemand?.columnId;
@@ -123,28 +118,7 @@ export function KanbanBoard() {
         </div>
         <button
           className="inline-flex items-center gap-1.5 h-9 px-3 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
-          onClick={() => {
-            addDemand({
-              title: 'New Demand',
-              description: '',
-              clientId: '',
-              demandTypeId: 'dt1',
-              priority: 'medium',
-              assignee: '',
-              tags: [],
-              columnId: 'backlog',
-              startedAt: null,
-              finishedAt: null,
-              blockedAt: null,
-              estimatedEffort: '',
-              actualEffort: '',
-              isBlocked: false,
-              blockerReason: '',
-              cancellationReason: '',
-              notes: '',
-              attachments: [],
-            });
-          }}
+          onClick={() => addDemand(NEW_DEMAND_DEFAULTS)}
         >
           <Plus className="h-4 w-4" /> New Demand
         </button>
