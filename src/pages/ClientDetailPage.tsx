@@ -32,17 +32,9 @@ export function ClientDetailPage() {
     );
   }
 
-  const clientDemands = demands.filter((d) => d.clientId === client.id);
   const openDemands = clientDemands.filter((d) => d.columnId !== 'done' && d.columnId !== 'canceled');
   const doneDemands = clientDemands.filter((d) => d.columnId === 'done');
   const blockedDemands = clientDemands.filter((d) => d.isBlocked);
-
-  const avgCycleTime = useMemo(() => {
-    const completed = clientDemands.filter((d) => d.startedAt && d.finishedAt);
-    if (!completed.length) return null;
-    const total = completed.reduce((sum, d) => sum + differenceInHours(parseISO(d.finishedAt!), parseISO(d.startedAt!)), 0);
-    return total / completed.length;
-  }, [clientDemands]);
 
   const clientActivity = activity
     .filter((a) => clientDemands.some((d) => d.id === a.demandId))
