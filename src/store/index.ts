@@ -171,9 +171,9 @@ export const useStore = create<AppState>((set, get) => ({
         demandId,
         type: toColumnId === 'done' ? 'completed' : 'moved',
         description: toColumnId === 'done'
-          ? `Completed (moved from ${fromCol?.title || fromColumnId})`
-          : `Moved from ${fromCol?.title || fromColumnId} to ${toCol?.title || toColumnId}`,
-        user: 'System',
+          ? `Concluído (movido de ${fromCol?.title || fromColumnId})`
+          : `Movido de ${fromCol?.title || fromColumnId} para ${toCol?.title || toColumnId}`,
+        user: 'Sistema',
         meta: { from: fromColumnId, to: toColumnId },
       });
     }
