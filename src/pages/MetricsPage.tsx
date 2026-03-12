@@ -30,14 +30,13 @@ export function MetricsPage() {
     return demands.filter((d) => d.clientId === selectedClientId);
   }, [demands, selectedClientId]);
 
-  // Lead Time
   const leadTimeData = useMemo(() => {
     const byClient: Record<string, number[]> = {};
     filtered.forEach((d) => {
       if (!d.finishedAt) return;
       const hours = differenceInHours(parseISO(d.finishedAt), parseISO(d.createdAt));
       const client = clients.find((c) => c.id === d.clientId);
-      const name = client?.name || 'Unknown';
+      const name = client?.name || 'Desconhecido';
       (byClient[name] ??= []).push(hours);
     });
     return Object.entries(byClient).map(([name, vals]) => ({
@@ -45,14 +44,13 @@ export function MetricsPage() {
     }));
   }, [filtered, clients]);
 
-  // Cycle Time
   const cycleTimeData = useMemo(() => {
     const byClient: Record<string, number[]> = {};
     filtered.forEach((d) => {
       if (!d.startedAt || !d.finishedAt) return;
       const hours = differenceInHours(parseISO(d.finishedAt), parseISO(d.startedAt));
       const client = clients.find((c) => c.id === d.clientId);
-      const name = client?.name || 'Unknown';
+      const name = client?.name || 'Desconhecido';
       (byClient[name] ??= []).push(hours);
     });
     return Object.entries(byClient).map(([name, vals]) => ({
@@ -65,7 +63,7 @@ export function MetricsPage() {
     filtered.forEach((d) => {
       if (d.columnId !== 'done') return;
       const client = clients.find((c) => c.id === d.clientId);
-      const name = client?.name || 'Unknown';
+      const name = client?.name || 'Desconhecido';
       byClient[name] = (byClient[name] || 0) + 1;
     });
     return Object.entries(byClient).map(([name, count]) => ({ name, count }));
@@ -75,7 +73,7 @@ export function MetricsPage() {
     const byWeek: Record<string, number> = {};
     filtered.forEach((d) => {
       if (!d.finishedAt) return;
-      const week = format(startOfWeek(parseISO(d.finishedAt), { weekStartsOn: 1 }), 'MMM d');
+      const week = format(startOfWeek(parseISO(d.finishedAt), { weekStartsOn: 1 }), 'dd/MM');
       byWeek[week] = (byWeek[week] || 0) + 1;
     });
     return Object.entries(byWeek).map(([week, count]) => ({ week, count })).sort((a, b) => a.week.localeCompare(b.week));
@@ -88,7 +86,7 @@ export function MetricsPage() {
       const end = d.isBlocked ? new Date().toISOString() : d.lastUpdated;
       const hours = differenceInHours(parseISO(end), parseISO(d.blockedAt));
       const client = clients.find((c) => c.id === d.clientId);
-      const name = client?.name || 'Unknown';
+      const name = client?.name || 'Desconhecido';
       (byClient[name] ??= []).push(hours);
     });
     return Object.entries(byClient).map(([name, vals]) => ({
@@ -100,26 +98,29 @@ export function MetricsPage() {
     const byType: Record<string, number> = {};
     filtered.forEach((d) => {
       const dt = demandTypes.find((t) => t.id === d.demandTypeId);
-      const name = dt?.label || 'Unknown';
+      const name = dt?.label || 'Desconhecido';
       byType[name] = (byType[name] || 0) + 1;
     });
     return Object.entries(byType).map(([name, count]) => ({ name, count }));
   }, [filtered, demandTypes]);
 
   const perPriorityData = useMemo(() => {
+    const PRIORITY_LABELS: Record<string, string> = {
+      low: 'Baixa', medium: 'Média', high: 'Alta', urgent: 'Crítica',
+    };
     const byP: Record<string, number> = {};
     filtered.forEach((d) => {
-      const label = d.priority.charAt(0).toUpperCase() + d.priority.slice(1);
+      const label = PRIORITY_LABELS[d.priority] || d.priority;
       byP[label] = (byP[label] || 0) + 1;
     });
     return Object.entries(byP).map(([name, count]) => ({ name, count }));
   }, [filtered]);
 
   const PRIORITY_COLORS: Record<string, string> = {
-    Urgent: 'hsl(0, 84%, 60%)',
-    High: 'hsl(30, 90%, 55%)',
-    Medium: 'hsl(48, 95%, 50%)',
-    Low: 'hsl(150, 55%, 48%)',
+    Crítica: 'hsl(0, 84%, 60%)',
+    Alta: 'hsl(30, 90%, 55%)',
+    Média: 'hsl(48, 95%, 50%)',
+    Baixa: 'hsl(150, 55%, 48%)',
   };
 
   const stats = useMemo(() => {
@@ -135,15 +136,15 @@ export function MetricsPage() {
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-semibold heading-tight text-foreground">Metrics Dashboard</h1>
-            <p className="text-[13px] text-muted-foreground mt-0.5">Track operational performance across clients</p>
+            <h1 className="text-xl font-semibold heading-tight text-foreground">Painel de Métricas</h1>
+            <p className="text-[13px] text-muted-foreground mt-0.5">Acompanhe a performance operacional por cliente</p>
           </div>
           <Select value={selectedClientId} onValueChange={setSelectedClientId}>
             <SelectTrigger className="w-48 rounded-xl border-border bg-card card-shadow">
-              <SelectValue placeholder="All Clients" />
+              <SelectValue placeholder="Todos os Clientes" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Clients</SelectItem>
+              <SelectItem value="all">Todos os Clientes</SelectItem>
               {clients.map((c) => (
                 <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
               ))}
@@ -169,7 +170,7 @@ export function MetricsPage() {
 
         {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <ChartCard title="Lead Time by Client" subtitle="Avg hours from creation to completion">
+          <ChartCard title="Lead Time por Cliente" subtitle="Média de horas da criação até conclusão">
             {leadTimeData.length ? (
               <ResponsiveContainer width="100%" height={260}>
                 <BarChart data={leadTimeData} margin={{ top: 4, right: 12, bottom: 4, left: 0 }}>
@@ -177,7 +178,7 @@ export function MetricsPage() {
                   <XAxis dataKey="name" tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} />
                   <YAxis tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} />
                   <Tooltip content={<MetricTooltip />} />
-                  <Bar dataKey="avgHours" name="Avg Lead Time" radius={[6, 6, 0, 0]}>
+                  <Bar dataKey="avgHours" name="Lead Time Médio" radius={[6, 6, 0, 0]}>
                     {leadTimeData.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
                   </Bar>
                 </BarChart>
@@ -185,7 +186,7 @@ export function MetricsPage() {
             ) : <EmptyChart />}
           </ChartCard>
 
-          <ChartCard title="Cycle Time by Client" subtitle="Avg hours from start to completion">
+          <ChartCard title="Cycle Time por Cliente" subtitle="Média de horas do início até conclusão">
             {cycleTimeData.length ? (
               <ResponsiveContainer width="100%" height={260}>
                 <BarChart data={cycleTimeData} margin={{ top: 4, right: 12, bottom: 4, left: 0 }}>
@@ -193,7 +194,7 @@ export function MetricsPage() {
                   <XAxis dataKey="name" tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} />
                   <YAxis tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} />
                   <Tooltip content={<MetricTooltip />} />
-                  <Bar dataKey="avgHours" name="Avg Cycle Time" radius={[6, 6, 0, 0]}>
+                  <Bar dataKey="avgHours" name="Cycle Time Médio" radius={[6, 6, 0, 0]}>
                     {cycleTimeData.map((_, i) => <Cell key={i} fill={CHART_COLORS[(i + 1) % CHART_COLORS.length]} />)}
                   </Bar>
                 </BarChart>
@@ -201,7 +202,7 @@ export function MetricsPage() {
             ) : <EmptyChart />}
           </ChartCard>
 
-          <ChartCard title="Tickets per Type" subtitle="Distribution by demand type">
+          <ChartCard title="Tickets por Tipo" subtitle="Distribuição por tipo de demanda">
             {perTypeData.length ? (
               <ResponsiveContainer width="100%" height={260}>
                 <BarChart data={perTypeData} margin={{ top: 4, right: 12, bottom: 4, left: 0 }}>
@@ -217,7 +218,7 @@ export function MetricsPage() {
             ) : <EmptyChart />}
           </ChartCard>
 
-          <ChartCard title="Tickets per Priority" subtitle="Distribution by priority level">
+          <ChartCard title="Tickets por Prioridade" subtitle="Distribuição por nível de prioridade">
             {perPriorityData.length ? (
               <ResponsiveContainer width="100%" height={260}>
                 <PieChart>
@@ -232,7 +233,7 @@ export function MetricsPage() {
             ) : <EmptyChart />}
           </ChartCard>
 
-          <ChartCard title="Throughput by Client" subtitle="Completed demands per client">
+          <ChartCard title="Entregas por Cliente" subtitle="Demandas concluídas por cliente">
             {throughputData.length ? (
               <ResponsiveContainer width="100%" height={260}>
                 <PieChart>
@@ -247,7 +248,7 @@ export function MetricsPage() {
             ) : <EmptyChart />}
           </ChartCard>
 
-          <ChartCard title="Throughput per Week" subtitle="Completed demands over time">
+          <ChartCard title="Entregas por Semana" subtitle="Demandas concluídas ao longo do tempo">
             {throughputWeekly.length ? (
               <ResponsiveContainer width="100%" height={260}>
                 <LineChart data={throughputWeekly} margin={{ top: 4, right: 12, bottom: 4, left: 0 }}>
@@ -255,13 +256,13 @@ export function MetricsPage() {
                   <XAxis dataKey="week" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
                   <YAxis tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} allowDecimals={false} />
                   <Tooltip content={<SimpleTooltip />} />
-                  <Line type="monotone" dataKey="count" name="Completed" stroke={CHART_COLORS[0]} strokeWidth={2} dot={{ r: 4, fill: CHART_COLORS[0] }} />
+                  <Line type="monotone" dataKey="count" name="Concluídos" stroke={CHART_COLORS[0]} strokeWidth={2} dot={{ r: 4, fill: CHART_COLORS[0] }} />
                 </LineChart>
               </ResponsiveContainer>
             ) : <EmptyChart />}
           </ChartCard>
 
-          <ChartCard title="Blocked Time by Client" subtitle="Total hours demands were blocked">
+          <ChartCard title="Tempo Bloqueado por Cliente" subtitle="Total de horas com demandas bloqueadas">
             {blockedTimeData.length ? (
               <ResponsiveContainer width="100%" height={260}>
                 <BarChart data={blockedTimeData} margin={{ top: 4, right: 12, bottom: 4, left: 0 }}>
@@ -269,7 +270,7 @@ export function MetricsPage() {
                   <XAxis dataKey="name" tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} />
                   <YAxis tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} />
                   <Tooltip content={<MetricTooltip field="totalHours" />} />
-                  <Bar dataKey="totalHours" name="Blocked Hours" radius={[6, 6, 0, 0]}>
+                  <Bar dataKey="totalHours" name="Horas Bloqueadas" radius={[6, 6, 0, 0]}>
                     {blockedTimeData.map((_, i) => <Cell key={i} fill={CHART_COLORS[(i + 4) % CHART_COLORS.length]} />)}
                   </Bar>
                 </BarChart>
@@ -277,7 +278,7 @@ export function MetricsPage() {
             ) : <EmptyChart />}
           </ChartCard>
 
-          <ChartCard title="Blocked Tickets" subtitle="Currently blocked demands">
+          <ChartCard title="Tickets Bloqueados" subtitle="Demandas atualmente bloqueadas">
             {(() => {
               const blocked = filtered.filter((d) => d.isBlocked);
               if (!blocked.length) return <EmptyChart />;
@@ -320,7 +321,7 @@ function ChartCard({ title, subtitle, children }: { title: string; subtitle: str
 function EmptyChart() {
   return (
     <div className="flex items-center justify-center h-[260px] text-sm text-muted-foreground">
-      No data available yet
+      Sem dados disponíveis
     </div>
   );
 }
@@ -332,7 +333,7 @@ function MetricTooltip({ active, payload, field = 'avgHours' }: any) {
     <div className="rounded-xl border border-border bg-card px-3 py-2 text-xs shadow-lg">
       <p className="font-medium text-foreground">{data.name}</p>
       <p className="text-muted-foreground mt-1">
-        {hoursLabel(data[field])} ({data.count} demand{data.count !== 1 ? 's' : ''})
+        {hoursLabel(data[field])} ({data.count} demanda{data.count !== 1 ? 's' : ''})
       </p>
     </div>
   );

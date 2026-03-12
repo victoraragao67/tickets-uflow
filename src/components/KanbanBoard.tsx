@@ -19,7 +19,7 @@ import { KanbanCard } from './KanbanCard';
 import { Plus } from 'lucide-react';
 
 const NEW_DEMAND_DEFAULTS = {
-  title: 'New Demand',
+  title: 'Nova Demanda',
   description: '',
   expectedResult: '',
   clientId: '',

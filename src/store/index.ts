@@ -39,9 +39,9 @@ const SAMPLE_DEMANDS: Demand[] = [
 ];
 
 const SAMPLE_ACTIVITY: ActivityEvent[] = [
-  { id: 'a1', demandId: 'd1', type: 'created', description: 'Demand created', user: 'System', timestamp: '2024-06-01T09:00:00Z' },
-  { id: 'a2', demandId: 'd1', type: 'moved', description: 'Moved from Backlog to In Progress', user: 'Alex Rivera', timestamp: '2024-06-02T10:00:00Z', meta: { from: 'backlog', to: 'in_progress' } },
-  { id: 'a3', demandId: 'd4', type: 'blocked', description: 'Blocked: Waiting for client', user: 'Sam Taylor', timestamp: '2024-06-01T10:00:00Z' },
+  { id: 'a1', demandId: 'd1', type: 'created', description: 'Demanda criada', user: 'Sistema', timestamp: '2024-06-01T09:00:00Z' },
+  { id: 'a2', demandId: 'd1', type: 'moved', description: 'Movido de Backlog para Em Progresso', user: 'Alex Rivera', timestamp: '2024-06-02T10:00:00Z', meta: { from: 'backlog', to: 'in_progress' } },
+  { id: 'a3', demandId: 'd4', type: 'blocked', description: 'Bloqueado: Aguardando cliente', user: 'Sam Taylor', timestamp: '2024-06-01T10:00:00Z' },
 ];
 
 interface Filters {

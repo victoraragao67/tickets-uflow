@@ -76,7 +76,7 @@ export function KanbanFilters() {
       </Select>
       {hasFilters && (
         <button onClick={clearFilters} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1.5 rounded-lg hover:bg-accent">
-          <X className="h-3 w-3" /> Clear
+          <X className="h-3 w-3" /> Limpar
         </button>
       )}
     </div>

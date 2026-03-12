@@ -131,7 +131,7 @@ function SearchResults({ onClose }: { onClose: () => void }) {
       )}
       {matchedClients.length > 0 && (
         <div>
-          <div className="px-3 py-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Clients</div>
+          <div className="px-3 py-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Clientes</div>
           {matchedClients.map((c) => (
             <Link
               key={c.id}

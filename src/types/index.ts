@@ -94,24 +94,24 @@ export type CancellationReason =
   | 'strategic_review';
 
 export const BLOCKER_REASONS: Record<BlockerReason, string> = {
-  waiting_client: 'Waiting for client',
-  waiting_developer: 'Waiting for developer',
-  waiting_third_party: 'Waiting for third party',
-  internal_dependency: 'Internal dependency',
-  urgent_priority_change: 'Urgent priority change',
+  waiting_client: 'Aguardando cliente',
+  waiting_developer: 'Aguardando desenvolvedor',
+  waiting_third_party: 'Aguardando terceiro',
+  internal_dependency: 'Dependência interna',
+  urgent_priority_change: 'Mudança de prioridade urgente',
 };
 
 export const CANCELLATION_REASONS: Record<CancellationReason, string> = {
-  client_changed_priority: 'Client changed priority',
-  scope_changed: 'Scope changed',
-  duplicate_request: 'Duplicate request',
-  lack_of_response: 'Lack of client response',
-  strategic_review: 'Strategic review',
+  client_changed_priority: 'Cliente mudou a prioridade',
+  scope_changed: 'Escopo alterado',
+  duplicate_request: 'Solicitação duplicada',
+  lack_of_response: 'Falta de resposta do cliente',
+  strategic_review: 'Revisão estratégica',
 };
 
 export const PRIORITY_CONFIG: Record<Priority, { label: string; className: string }> = {
-  low: { label: 'Low', className: 'bg-accent-low/15 text-accent-low' },
-  medium: { label: 'Medium', className: 'bg-accent-medium/15 text-accent-medium' },
-  high: { label: 'High', className: 'bg-accent-high/15 text-accent-high' },
-  urgent: { label: 'Urgent', className: 'bg-accent-urgent/15 text-accent-urgent' },
+  low: { label: 'Baixa', className: 'bg-accent-low/15 text-accent-low' },
+  medium: { label: 'Média', className: 'bg-accent-medium/15 text-accent-medium' },
+  high: { label: 'Alta', className: 'bg-accent-high/15 text-accent-high' },
+  urgent: { label: 'Crítica', className: 'bg-accent-urgent/15 text-accent-urgent' },
 };

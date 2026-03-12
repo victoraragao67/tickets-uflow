@@ -30,7 +30,7 @@ export function DemandDetailModal({ demandId, onClose }: Props) {
 
   const handleSubmitComment = () => {
     if (!commentText.trim()) return;
-    addComment({ demandId, user: 'You', content: commentText.trim() });
+    addComment({ demandId, user: 'Você', content: commentText.trim() });
     setCommentText('');
   };
 
@@ -44,12 +44,12 @@ export function DemandDetailModal({ demandId, onClose }: Props) {
     updateDemand(demandId, { watchers: demand.watchers.filter((x) => x !== w) });
   };
 
-  const formatDate = (d: string | null) => d ? format(new Date(d), 'MMM d, yyyy HH:mm') : '—';
+  const formatDate = (d: string | null) => d ? format(new Date(d), 'dd/MM/yyyy HH:mm') : '—';
 
   const TABS = [
-    { id: 'details' as const, icon: FileText, label: 'Details' },
-    { id: 'activity' as const, icon: Activity, label: 'Activity' },
-    { id: 'comments' as const, icon: MessageSquare, label: 'Comments', count: demandComments.length },
+    { id: 'details' as const, icon: FileText, label: 'Detalhes' },
+    { id: 'activity' as const, icon: Activity, label: 'Atividades' },
+    { id: 'comments' as const, icon: MessageSquare, label: 'Comentários', count: demandComments.length },
   ];
 
   const renderContent = (text: string) => {
@@ -90,7 +90,7 @@ export function DemandDetailModal({ demandId, onClose }: Props) {
               </span>
               {demand.isBlocked && (
                 <span className="inline-flex items-center gap-0.5 rounded-full px-2.5 py-0.5 text-[11px] font-medium bg-accent-blocked/12 text-accent-blocked">
-                  <AlertCircle className="h-3 w-3" /> Blocked
+                  <AlertCircle className="h-3 w-3" /> Bloqueado
                 </span>
               )}
               <span className="text-[11px] text-muted-foreground bg-muted rounded-full px-2.5 py-0.5">{column?.title}</span>
@@ -126,21 +126,21 @@ export function DemandDetailModal({ demandId, onClose }: Props) {
             <div className="grid grid-cols-3 gap-6">
               <div className="col-span-2 space-y-5">
                 <div>
-                  <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Description</label>
+                  <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Descrição</label>
                   <Textarea
                     className="min-h-[100px] rounded-xl border-border bg-background text-sm resize-none focus-visible:ring-ring"
                     value={demand.description}
                     onChange={(e) => updateDemand(demandId, { description: e.target.value })}
-                    placeholder="Add a description…"
+                    placeholder="Adicione uma descrição…"
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Expected Result</label>
+                  <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Resultado Esperado</label>
                   <Textarea
                     className="min-h-[80px] rounded-xl border-border bg-background text-sm resize-none focus-visible:ring-ring"
                     value={demand.expectedResult}
                     onChange={(e) => updateDemand(demandId, { expectedResult: e.target.value })}
-                    placeholder="What is the expected outcome…"
+                    placeholder="Qual o resultado esperado…"
                   />
                 </div>
 
@@ -148,31 +148,31 @@ export function DemandDetailModal({ demandId, onClose }: Props) {
                   <div className="rounded-xl border border-border p-4 space-y-2.5">
                     <div className="flex items-center gap-1.5">
                       <User className="h-3.5 w-3.5 text-muted-foreground" />
-                      <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Client Information</span>
+                      <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Informações do Cliente</span>
                     </div>
                     <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div><span className="text-muted-foreground">Name:</span> {client.name}</div>
-                      <div><span className="text-muted-foreground">Company:</span> {client.company}</div>
-                      <div><span className="text-muted-foreground">Contact:</span> {client.contactName}</div>
-                      <div><span className="text-muted-foreground">Email:</span> {client.email}</div>
+                      <div><span className="text-muted-foreground">Nome:</span> {client.name}</div>
+                      <div><span className="text-muted-foreground">Empresa:</span> {client.company}</div>
+                      <div><span className="text-muted-foreground">Contato:</span> {client.contactName}</div>
+                      <div><span className="text-muted-foreground">E-mail:</span> {client.email}</div>
                     </div>
                   </div>
                 )}
 
                 <div>
-                  <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Notes</label>
+                  <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Observações</label>
                   <Textarea
                     className="min-h-[80px] rounded-xl border-border bg-background text-sm resize-none focus-visible:ring-ring"
                     value={demand.notes}
                     onChange={(e) => updateDemand(demandId, { notes: e.target.value })}
-                    placeholder="Internal notes…"
+                    placeholder="Observações internas…"
                   />
                 </div>
 
                 <div>
-                  <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Attachments</label>
+                  <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Anexos</label>
                   {demand.attachments.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">No attachments.</p>
+                    <p className="text-sm text-muted-foreground">Sem anexos.</p>
                   ) : (
                     <div className="space-y-1">
                       {demand.attachments.map((a, i) => (
@@ -189,25 +189,25 @@ export function DemandDetailModal({ demandId, onClose }: Props) {
                   <div className="rounded-xl border border-accent-blocked/20 bg-accent-blocked/5 p-4">
                     <div className="flex items-center gap-1.5 mb-2">
                       <AlertCircle className="h-3.5 w-3.5 text-accent-blocked" />
-                      <span className="text-sm font-medium text-accent-blocked">Blocker</span>
+                      <span className="text-sm font-medium text-accent-blocked">Bloqueio</span>
                     </div>
                     <p className="text-sm text-muted-foreground">{demand.blockerReason}</p>
-                    {demand.blockedBy && <p className="text-xs text-muted-foreground mt-1">Reported by: {demand.blockedBy}</p>}
+                    {demand.blockedBy && <p className="text-xs text-muted-foreground mt-1">Reportado por: {demand.blockedBy}</p>}
                   </div>
                 )}
               </div>
 
               <div className="space-y-4">
-                <Field label="Client">
+                <Field label="Cliente">
                   <Select value={demand.clientId || "none"} onValueChange={(v) => updateDemand(demandId, { clientId: v === 'none' ? '' : v })}>
-                    <SelectTrigger className="h-9 rounded-xl border-border bg-background text-sm"><SelectValue placeholder="Select client" /></SelectTrigger>
+                    <SelectTrigger className="h-9 rounded-xl border-border bg-background text-sm"><SelectValue placeholder="Selecionar cliente" /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="none">None</SelectItem>
+                      <SelectItem value="none">Nenhum</SelectItem>
                       {clients.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </Field>
-                <Field label="Priority">
+                <Field label="Prioridade">
                   <Select value={demand.priority} onValueChange={(v) => updateDemand(demandId, { priority: v as Priority })}>
                     <SelectTrigger className="h-9 rounded-xl border-border bg-background text-sm"><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -215,7 +215,7 @@ export function DemandDetailModal({ demandId, onClose }: Props) {
                     </SelectContent>
                   </Select>
                 </Field>
-                <Field label="Type">
+                <Field label="Tipo">
                   <Select value={demand.demandTypeId} onValueChange={(v) => updateDemand(demandId, { demandTypeId: v })}>
                     <SelectTrigger className="h-9 rounded-xl border-border bg-background text-sm"><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -223,11 +223,11 @@ export function DemandDetailModal({ demandId, onClose }: Props) {
                     </SelectContent>
                   </Select>
                 </Field>
-                <Field label="Assignee">
-                  <Input className="h-9 rounded-xl border-border bg-background text-sm focus-visible:ring-ring" value={demand.assignee} onChange={(e) => updateDemand(demandId, { assignee: e.target.value })} placeholder="Assign to…" />
+                <Field label="Responsável">
+                  <Input className="h-9 rounded-xl border-border bg-background text-sm focus-visible:ring-ring" value={demand.assignee} onChange={(e) => updateDemand(demandId, { assignee: e.target.value })} placeholder="Atribuir a…" />
                 </Field>
 
-                <Field label="Watchers">
+                <Field label="Observadores">
                   <div className="space-y-1.5">
                     {demand.watchers.length > 0 && (
                       <div className="flex flex-wrap gap-1">
@@ -245,27 +245,27 @@ export function DemandDetailModal({ demandId, onClose }: Props) {
                         className="h-8 rounded-xl border-border bg-background text-xs flex-1 focus-visible:ring-ring"
                         value={watcherInput}
                         onChange={(e) => setWatcherInput(e.target.value)}
-                        placeholder="Add watcher…"
+                        placeholder="Adicionar observador…"
                         onKeyDown={(e) => { if (e.key === 'Enter') addWatcher(); }}
                       />
-                      <button onClick={addWatcher} className="h-8 px-3 rounded-xl border border-primary bg-card text-primary text-xs font-medium hover:bg-accent transition-colors">Add</button>
+                      <button onClick={addWatcher} className="h-8 px-3 rounded-xl border border-primary bg-card text-primary text-xs font-medium hover:bg-accent transition-colors">Adicionar</button>
                     </div>
                   </div>
                 </Field>
 
-                <Field label="Estimated Effort">
-                  <Input className="h-9 rounded-xl border-border bg-background text-sm focus-visible:ring-ring" value={demand.estimatedEffort} onChange={(e) => updateDemand(demandId, { estimatedEffort: e.target.value })} placeholder="e.g. 4h" />
+                <Field label="Esforço Estimado">
+                  <Input className="h-9 rounded-xl border-border bg-background text-sm focus-visible:ring-ring" value={demand.estimatedEffort} onChange={(e) => updateDemand(demandId, { estimatedEffort: e.target.value })} placeholder="ex: 4h" />
                 </Field>
-                <Field label="Actual Effort">
-                  <Input className="h-9 rounded-xl border-border bg-background text-sm focus-visible:ring-ring" value={demand.actualEffort} onChange={(e) => updateDemand(demandId, { actualEffort: e.target.value })} placeholder="e.g. 3h" />
+                <Field label="Esforço Real">
+                  <Input className="h-9 rounded-xl border-border bg-background text-sm focus-visible:ring-ring" value={demand.actualEffort} onChange={(e) => updateDemand(demandId, { actualEffort: e.target.value })} placeholder="ex: 3h" />
                 </Field>
 
                 <div className="border-t border-border pt-4 space-y-2.5">
-                  <DateRow label="Created" date={demand.createdAt} />
-                  <DateRow label="Started" date={demand.startedAt} />
-                  <DateRow label="Finished" date={demand.finishedAt} />
-                  <DateRow label="Blocked" date={demand.blockedAt} />
-                  <DateRow label="Updated" date={demand.lastUpdated} />
+                  <DateRow label="Criado" date={demand.createdAt} />
+                  <DateRow label="Iniciado" date={demand.startedAt} />
+                  <DateRow label="Finalizado" date={demand.finishedAt} />
+                  <DateRow label="Bloqueado" date={demand.blockedAt} />
+                  <DateRow label="Atualizado" date={demand.lastUpdated} />
                 </div>
 
                 <div className="border-t border-border pt-4">
@@ -275,19 +275,19 @@ export function DemandDetailModal({ demandId, onClose }: Props) {
                       checked={demand.isBlocked}
                       onChange={(e) => {
                         if (e.target.checked) {
-                          updateDemand(demandId, { isBlocked: true, blockedAt: new Date().toISOString(), blockerReason: 'Waiting for client', blockedBy: 'You' });
+                          updateDemand(demandId, { isBlocked: true, blockedAt: new Date().toISOString(), blockerReason: 'Aguardando cliente', blockedBy: 'Você' });
                         } else {
                           updateDemand(demandId, { isBlocked: false, blockedAt: null, blockerReason: '', blockedBy: '' });
                         }
                       }}
                       className="rounded accent-primary"
                     />
-                    Mark as blocked
+                    Marcar como bloqueado
                   </label>
                   {demand.isBlocked && (
                     <div className="space-y-2 mt-3">
                       <Select value={demand.blockerReason} onValueChange={(v) => updateDemand(demandId, { blockerReason: v })}>
-                        <SelectTrigger className="h-9 rounded-xl border-border bg-background text-sm"><SelectValue placeholder="Reason" /></SelectTrigger>
+                        <SelectTrigger className="h-9 rounded-xl border-border bg-background text-sm"><SelectValue placeholder="Motivo" /></SelectTrigger>
                         <SelectContent>
                           {Object.entries(BLOCKER_REASONS).map(([k, v]) => <SelectItem key={k} value={v}>{v}</SelectItem>)}
                         </SelectContent>
@@ -296,7 +296,7 @@ export function DemandDetailModal({ demandId, onClose }: Props) {
                         className="h-9 rounded-xl border-border bg-background text-sm focus-visible:ring-ring"
                         value={demand.blockedBy}
                         onChange={(e) => updateDemand(demandId, { blockedBy: e.target.value })}
-                        placeholder="Blocked by…"
+                        placeholder="Bloqueado por…"
                       />
                     </div>
                   )}
@@ -307,7 +307,7 @@ export function DemandDetailModal({ demandId, onClose }: Props) {
 
           {activeTab === 'activity' && (
             <div className="space-y-3">
-              {demandActivity.length === 0 && <p className="text-sm text-muted-foreground">No activity yet.</p>}
+              {demandActivity.length === 0 && <p className="text-sm text-muted-foreground">Nenhuma atividade ainda.</p>}
               {demandActivity.map((event) => (
                 <div key={event.id} className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-accent/50 transition-colors">
                   <div className={`mt-1.5 h-2 w-2 rounded-full shrink-0 ${
@@ -332,17 +332,17 @@ export function DemandDetailModal({ demandId, onClose }: Props) {
                   className="flex-1 rounded-xl border-border bg-background text-sm resize-none min-h-[60px] focus-visible:ring-ring"
                   value={commentText}
                   onChange={(e) => setCommentText(e.target.value)}
-                  placeholder="Write a comment… Use @name to mention"
+                  placeholder="Escreva um comentário… Use @nome para mencionar"
                   onKeyDown={(e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleSubmitComment(); }}
                 />
                 <button
                   onClick={handleSubmitComment}
                   className="self-end h-9 px-4 rounded-xl gradient-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity shadow-sm"
                 >
-                  Send
+                  Enviar
                 </button>
               </div>
-              {demandComments.length === 0 && <p className="text-sm text-muted-foreground">No comments yet.</p>}
+              {demandComments.length === 0 && <p className="text-sm text-muted-foreground">Nenhum comentário ainda.</p>}
               {demandComments.map((comment) => (
                 <div key={comment.id} className="rounded-xl border border-border p-3.5">
                   <div className="flex items-center gap-2 mb-2">
@@ -376,7 +376,7 @@ function DateRow({ label, date }: { label: string; date: string | null }) {
   return (
     <div className="flex justify-between text-[12px]">
       <span className="text-muted-foreground">{label}</span>
-      <span className="text-foreground text-tabular">{date ? format(new Date(date), 'MMM d, HH:mm') : '—'}</span>
+      <span className="text-foreground text-tabular">{date ? format(new Date(date), 'dd/MM/yyyy HH:mm') : '—'}</span>
     </div>
   );
 }

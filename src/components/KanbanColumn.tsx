@@ -102,7 +102,7 @@ export function KanbanColumn({ column, demands }: Props) {
           <div className="rounded-xl bg-card card-shadow p-3">
             <input
               autoFocus
-              placeholder="Demand title…"
+              placeholder="Título da demanda…"
               className="w-full text-sm bg-transparent outline-none placeholder:text-muted-foreground"
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
