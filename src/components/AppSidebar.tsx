@@ -117,7 +117,7 @@ function SearchResults({ onClose }: { onClose: () => void }) {
     <div className="border-t border-border py-1">
       {matchedDemands.length > 0 && (
         <div>
-          <div className="px-3 py-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Demands</div>
+          <div className="px-3 py-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Demandas</div>
           {matchedDemands.map((d) => (
             <button
               key={d.id}
