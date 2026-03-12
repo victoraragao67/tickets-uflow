@@ -128,7 +128,7 @@ export const useStore = create<AppState>((set, get) => ({
     const order = get().demands.filter((d) => d.columnId === demand.columnId).length;
     set((s) => ({
       demands: [...s.demands, { ...demand, id, createdAt: n, lastUpdated: n, order }],
-      activity: [...s.activity, { id: genId('a'), demandId: id, type: 'created', description: 'Demand created', user: 'System', timestamp: n }],
+      activity: [...s.activity, { id: genId('a'), demandId: id, type: 'created', description: 'Demanda criada', user: 'Sistema', timestamp: n }],
     }));
   },
 
