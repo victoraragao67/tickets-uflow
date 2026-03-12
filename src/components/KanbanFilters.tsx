@@ -35,7 +35,7 @@ export function KanbanFilters() {
           <SelectValue placeholder="Type" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Types</SelectItem>
+          <SelectItem value="all">Todos os Tipos</SelectItem>
           {demandTypes.map((dt) => (
             <SelectItem key={dt.id} value={dt.id}>{dt.label}</SelectItem>
           ))}
