@@ -226,7 +226,7 @@ export const useStore = create<AppState>((set, get) => ({
     get().addActivity({
       demandId: comment.demandId,
       type: 'comment',
-      description: `Comment added by ${comment.user}`,
+      description: `Comentário adicionado por ${comment.user}`,
       user: comment.user,
     });
   },
