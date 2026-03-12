@@ -27,7 +27,7 @@ export function ClientDetailPage() {
   if (!client) {
     return (
       <div className="flex h-screen items-center justify-center bg-background">
-        <p className="text-muted-foreground">Client not found.</p>
+        <p className="text-muted-foreground">Cliente não encontrado.</p>
       </div>
     );
   }
@@ -59,7 +59,7 @@ export function ClientDetailPage() {
             <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-medium ${
               client.status === 'active' ? 'bg-accent-low/12 text-accent-low' : 'bg-muted text-muted-foreground'
             }`}>
-              {client.status}
+              {client.status === 'active' ? 'Ativo' : 'Inativo'}
             </span>
           </div>
           <p className="text-[13px] text-muted-foreground mt-0.5">{client.company} · {client.segment}</p>
@@ -71,7 +71,7 @@ export function ClientDetailPage() {
           {/* Left Sidebar */}
           <div className="space-y-4">
             <div className="rounded-2xl bg-card card-shadow p-5 space-y-3">
-              <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Contact</h3>
+              <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Contato</h3>
               <div className="space-y-2.5 text-sm">
                 <div className="flex items-center gap-2.5 text-muted-foreground"><Building2 className="h-3.5 w-3.5" />{client.contactName || '—'}</div>
                 <div className="flex items-center gap-2.5 text-muted-foreground"><Mail className="h-3.5 w-3.5" />{client.email || '—'}</div>
@@ -81,14 +81,14 @@ export function ClientDetailPage() {
             </div>
 
             <div className="rounded-2xl bg-card card-shadow p-5 space-y-3">
-              <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Metrics</h3>
+              <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Métricas</h3>
               <div className="grid grid-cols-2 gap-4">
                 <Stat label="Total" value={clientDemands.length} />
-                <Stat label="Open" value={openDemands.length} />
-                <Stat label="Completed" value={doneDemands.length} />
-                <Stat label="Blocked" value={blockedDemands.length} highlight={blockedDemands.length > 0} />
-                <Stat label="Avg Cycle" value={formatCycleTime(avgCycleTime)} />
-                <Stat label="Status" value={client.status} />
+                <Stat label="Abertos" value={openDemands.length} />
+                <Stat label="Concluídos" value={doneDemands.length} />
+                <Stat label="Bloqueados" value={blockedDemands.length} highlight={blockedDemands.length > 0} />
+                <Stat label="Cycle Time Médio" value={formatCycleTime(avgCycleTime)} />
+                <Stat label="Status" value={client.status === 'active' ? 'Ativo' : 'Inativo'} />
               </div>
             </div>
           </div>
@@ -97,9 +97,9 @@ export function ClientDetailPage() {
           <div className="col-span-2 space-y-4">
             <div className="flex border-b border-border gap-1">
               {([
-                { id: 'demands' as TabId, label: 'Demands', count: clientDemands.length },
-                { id: 'activity' as TabId, label: 'Activity', count: clientActivity.length },
-                { id: 'notes' as TabId, label: 'Notes' },
+                { id: 'demands' as TabId, label: 'Demandas', count: clientDemands.length },
+                { id: 'activity' as TabId, label: 'Atividades', count: clientActivity.length },
+                { id: 'notes' as TabId, label: 'Observações' },
               ]).map((tab) => (
                 <button
                   key={tab.id}
@@ -116,7 +116,7 @@ export function ClientDetailPage() {
 
             {activeTab === 'demands' && (
               <div className="space-y-2.5">
-                {clientDemands.length === 0 && <p className="text-sm text-muted-foreground">No demands yet.</p>}
+                {clientDemands.length === 0 && <p className="text-sm text-muted-foreground">Nenhuma demanda ainda.</p>}
                 {clientDemands.map((d) => {
                   const dt = demandTypes.find((t) => t.id === d.demandTypeId);
                   const col = columns.find((c) => c.id === d.columnId);
@@ -139,7 +139,7 @@ export function ClientDetailPage() {
                         </span>
                         {d.isBlocked && (
                           <span className="inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[10px] font-medium bg-accent-blocked/12 text-accent-blocked">
-                            <AlertCircle className="h-3 w-3" /> Blocked
+                            <AlertCircle className="h-3 w-3" /> Bloqueado
                           </span>
                         )}
                       </div>
@@ -152,7 +152,7 @@ export function ClientDetailPage() {
 
             {activeTab === 'activity' && (
               <div className="space-y-1">
-                {clientActivity.length === 0 && <p className="text-sm text-muted-foreground">No activity yet.</p>}
+                {clientActivity.length === 0 && <p className="text-sm text-muted-foreground">Nenhuma atividade ainda.</p>}
                 {clientActivity.map((event) => (
                   <div key={event.id} className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-accent/50 transition-colors">
                     <div className={`mt-1.5 h-2 w-2 rounded-full shrink-0 ${
@@ -163,7 +163,7 @@ export function ClientDetailPage() {
                     }`} />
                     <div>
                       <p className="text-sm text-foreground">{event.description}</p>
-                      <p className="text-[11px] text-muted-foreground text-tabular">{format(new Date(event.timestamp), 'MMM d, HH:mm')}</p>
+                      <p className="text-[11px] text-muted-foreground text-tabular">{format(new Date(event.timestamp), 'dd/MM, HH:mm')}</p>
                     </div>
                   </div>
                 ))}
@@ -176,7 +176,7 @@ export function ClientDetailPage() {
                   className="min-h-[200px] rounded-xl border-border bg-background text-sm resize-none focus-visible:ring-ring"
                   value={client.notes}
                   onChange={(e) => updateClient(client.id, { notes: e.target.value })}
-                  placeholder="Add notes about this client…"
+                  placeholder="Adicione observações sobre este cliente…"
                 />
               </div>
             )}

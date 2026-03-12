@@ -19,7 +19,7 @@ import { KanbanCard } from './KanbanCard';
 import { Plus } from 'lucide-react';
 
 const NEW_DEMAND_DEFAULTS = {
-  title: 'New Demand',
+  title: 'Nova Demanda',
   description: '',
   expectedResult: '',
   clientId: '',
@@ -105,14 +105,14 @@ export function KanbanBoard() {
     <div className="flex h-screen flex-col bg-background">
       <header className="flex items-center justify-between px-8 py-5">
         <div>
-          <h1 className="text-xl font-semibold heading-tight text-foreground">Demands</h1>
-          <p className="text-[13px] text-muted-foreground mt-0.5">{filteredDemands.length} demands across {columns.length} columns</p>
+          <h1 className="text-xl font-semibold heading-tight text-foreground">Demandas</h1>
+          <p className="text-[13px] text-muted-foreground mt-0.5">{filteredDemands.length} demandas em {columns.length} colunas</p>
         </div>
         <button
           className="inline-flex items-center gap-2 h-10 px-5 rounded-xl gradient-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-all duration-150 shadow-sm"
           onClick={() => addDemand(NEW_DEMAND_DEFAULTS)}
         >
-          <Plus className="h-4 w-4" /> New Demand
+          <Plus className="h-4 w-4" /> Nova Demanda
         </button>
       </header>
 

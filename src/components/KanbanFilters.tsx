@@ -14,7 +14,7 @@ export function KanbanFilters() {
         <SlidersHorizontal className="h-4 w-4" />
       </div>
       <Input
-        placeholder="Search…"
+        placeholder="Buscar…"
         className="h-9 w-48 rounded-xl border-border bg-card text-sm card-shadow focus-visible:ring-ring"
         value={filters.search}
         onChange={(e) => setFilters({ search: e.target.value })}
@@ -24,7 +24,7 @@ export function KanbanFilters() {
           <SelectValue placeholder="Client" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Clients</SelectItem>
+          <SelectItem value="all">Todos os Clientes</SelectItem>
           {clients.map((c) => (
             <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
           ))}
@@ -35,7 +35,7 @@ export function KanbanFilters() {
           <SelectValue placeholder="Type" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Types</SelectItem>
+          <SelectItem value="all">Todos os Tipos</SelectItem>
           {demandTypes.map((dt) => (
             <SelectItem key={dt.id} value={dt.id}>{dt.label}</SelectItem>
           ))}
@@ -46,11 +46,11 @@ export function KanbanFilters() {
           <SelectValue placeholder="Priority" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Priorities</SelectItem>
-          <SelectItem value="urgent">Urgent</SelectItem>
-          <SelectItem value="high">High</SelectItem>
-          <SelectItem value="medium">Medium</SelectItem>
-          <SelectItem value="low">Low</SelectItem>
+          <SelectItem value="all">Todas as Prioridades</SelectItem>
+          <SelectItem value="urgent">Crítica</SelectItem>
+          <SelectItem value="high">Alta</SelectItem>
+          <SelectItem value="medium">Média</SelectItem>
+          <SelectItem value="low">Baixa</SelectItem>
         </SelectContent>
       </Select>
       <Select value={filters.assignee || "all"} onValueChange={(v) => setFilters({ assignee: v === 'all' ? '' : v })}>
@@ -58,7 +58,7 @@ export function KanbanFilters() {
           <SelectValue placeholder="Assignee" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Assignees</SelectItem>
+          <SelectItem value="all">Todos os Responsáveis</SelectItem>
           {assignees.map((a) => (
             <SelectItem key={a} value={a}>{a}</SelectItem>
           ))}
@@ -69,14 +69,14 @@ export function KanbanFilters() {
           <SelectValue placeholder="Blocked" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Status</SelectItem>
-          <SelectItem value="blocked">Blocked</SelectItem>
-          <SelectItem value="not_blocked">Not Blocked</SelectItem>
+          <SelectItem value="all">Todos os Status</SelectItem>
+          <SelectItem value="blocked">Bloqueado</SelectItem>
+          <SelectItem value="not_blocked">Não Bloqueado</SelectItem>
         </SelectContent>
       </Select>
       {hasFilters && (
         <button onClick={clearFilters} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1.5 rounded-lg hover:bg-accent">
-          <X className="h-3 w-3" /> Clear
+          <X className="h-3 w-3" /> Limpar
         </button>
       )}
     </div>

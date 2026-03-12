@@ -3,21 +3,21 @@ import type { Demand, KanbanColumn, Client, DemandType, ActivityEvent, Comment }
 
 const DEFAULT_COLUMNS: KanbanColumn[] = [
   { id: 'backlog', title: 'Backlog', order: 0, collapsed: false },
-  { id: 'todo', title: 'To Do', order: 1, collapsed: false },
-  { id: 'in_progress', title: 'In Progress', order: 2, collapsed: false },
-  { id: 'waiting', title: 'Waiting', order: 3, collapsed: false },
-  { id: 'review', title: 'Review', order: 4, collapsed: false },
-  { id: 'done', title: 'Done', order: 5, collapsed: false },
-  { id: 'canceled', title: 'Canceled', order: 6, collapsed: false },
+  { id: 'todo', title: 'A Fazer', order: 1, collapsed: false },
+  { id: 'in_progress', title: 'Em Progresso', order: 2, collapsed: false },
+  { id: 'waiting', title: 'Aguardando', order: 3, collapsed: false },
+  { id: 'review', title: 'Em Revisão', order: 4, collapsed: false },
+  { id: 'done', title: 'Concluído', order: 5, collapsed: false },
+  { id: 'canceled', title: 'Cancelado', order: 6, collapsed: false },
 ];
 
 const DEFAULT_DEMAND_TYPES: DemandType[] = [
-  { id: 'dt1', name: 'support', label: 'Support', color: '210 70% 55%', description: 'General support requests' },
-  { id: 'dt2', name: 'bug', label: 'Bug', color: '0 72% 51%', description: 'Bug reports and fixes' },
-  { id: 'dt3', name: 'improvement', label: 'Improvement', color: '280 60% 55%', description: 'Improvements to existing features' },
-  { id: 'dt4', name: 'feature_request', label: 'Feature Request', color: '170 60% 45%', description: 'New feature requests' },
-  { id: 'dt5', name: 'commercial_request', label: 'Commercial', color: '30 80% 50%', description: 'Commercial and business requests' },
-  { id: 'dt6', name: 'technical_investigation', label: 'Investigation', color: '240 40% 55%', description: 'Technical research and investigation' },
+  { id: 'dt1', name: 'support', label: 'Suporte', color: '210 70% 55%', description: 'Solicitações gerais de suporte' },
+  { id: 'dt2', name: 'bug', label: 'Bug', color: '0 72% 51%', description: 'Relatórios e correções de bugs' },
+  { id: 'dt3', name: 'improvement', label: 'Ajuste', color: '280 60% 55%', description: 'Melhorias em funcionalidades existentes' },
+  { id: 'dt4', name: 'feature_request', label: 'Nova Funcionalidade', color: '170 60% 45%', description: 'Solicitações de novas funcionalidades' },
+  { id: 'dt5', name: 'commercial_request', label: 'Comercial', color: '30 80% 50%', description: 'Solicitações comerciais e de negócios' },
+  { id: 'dt6', name: 'technical_investigation', label: 'Investigação', color: '240 40% 55%', description: 'Pesquisa e investigação técnica' },
 ];
 
 const DEFAULT_CLIENTS: Client[] = [
@@ -39,9 +39,9 @@ const SAMPLE_DEMANDS: Demand[] = [
 ];
 
 const SAMPLE_ACTIVITY: ActivityEvent[] = [
-  { id: 'a1', demandId: 'd1', type: 'created', description: 'Demand created', user: 'System', timestamp: '2024-06-01T09:00:00Z' },
-  { id: 'a2', demandId: 'd1', type: 'moved', description: 'Moved from Backlog to In Progress', user: 'Alex Rivera', timestamp: '2024-06-02T10:00:00Z', meta: { from: 'backlog', to: 'in_progress' } },
-  { id: 'a3', demandId: 'd4', type: 'blocked', description: 'Blocked: Waiting for client', user: 'Sam Taylor', timestamp: '2024-06-01T10:00:00Z' },
+  { id: 'a1', demandId: 'd1', type: 'created', description: 'Demanda criada', user: 'Sistema', timestamp: '2024-06-01T09:00:00Z' },
+  { id: 'a2', demandId: 'd1', type: 'moved', description: 'Movido de Backlog para Em Progresso', user: 'Alex Rivera', timestamp: '2024-06-02T10:00:00Z', meta: { from: 'backlog', to: 'in_progress' } },
+  { id: 'a3', demandId: 'd4', type: 'blocked', description: 'Bloqueado: Aguardando cliente', user: 'Sam Taylor', timestamp: '2024-06-01T10:00:00Z' },
 ];
 
 interface Filters {
@@ -128,7 +128,7 @@ export const useStore = create<AppState>((set, get) => ({
     const order = get().demands.filter((d) => d.columnId === demand.columnId).length;
     set((s) => ({
       demands: [...s.demands, { ...demand, id, createdAt: n, lastUpdated: n, order }],
-      activity: [...s.activity, { id: genId('a'), demandId: id, type: 'created', description: 'Demand created', user: 'System', timestamp: n }],
+      activity: [...s.activity, { id: genId('a'), demandId: id, type: 'created', description: 'Demanda criada', user: 'Sistema', timestamp: n }],
     }));
   },
 
@@ -137,13 +137,13 @@ export const useStore = create<AppState>((set, get) => ({
       demands: s.demands.map((d) => d.id === id ? { ...d, ...updates, lastUpdated: now() } : d),
     }));
     if (updates.assignee) {
-      get().addActivity({ demandId: id, type: 'assigned', description: `Assigned to ${updates.assignee}`, user: 'System' });
+      get().addActivity({ demandId: id, type: 'assigned', description: `Atribuído a ${updates.assignee}`, user: 'Sistema' });
     }
     if (updates.isBlocked === true) {
-      get().addActivity({ demandId: id, type: 'blocked', description: `Blocked: ${updates.blockerReason || 'Unknown'}`, user: updates.blockedBy || 'System' });
+      get().addActivity({ demandId: id, type: 'blocked', description: `Bloqueado: ${updates.blockerReason || 'Desconhecido'}`, user: updates.blockedBy || 'Sistema' });
     }
     if (updates.isBlocked === false) {
-      get().addActivity({ demandId: id, type: 'unblocked', description: 'Unblocked', user: 'System' });
+      get().addActivity({ demandId: id, type: 'unblocked', description: 'Desbloqueado', user: 'Sistema' });
     }
   },
 
@@ -171,9 +171,9 @@ export const useStore = create<AppState>((set, get) => ({
         demandId,
         type: toColumnId === 'done' ? 'completed' : 'moved',
         description: toColumnId === 'done'
-          ? `Completed (moved from ${fromCol?.title || fromColumnId})`
-          : `Moved from ${fromCol?.title || fromColumnId} to ${toCol?.title || toColumnId}`,
-        user: 'System',
+          ? `Concluído (movido de ${fromCol?.title || fromColumnId})`
+          : `Movido de ${fromCol?.title || fromColumnId} para ${toCol?.title || toColumnId}`,
+        user: 'Sistema',
         meta: { from: fromColumnId, to: toColumnId },
       });
     }
@@ -226,7 +226,7 @@ export const useStore = create<AppState>((set, get) => ({
     get().addActivity({
       demandId: comment.demandId,
       type: 'comment',
-      description: `Comment added by ${comment.user}`,
+      description: `Comentário adicionado por ${comment.user}`,
       user: comment.user,
     });
   },

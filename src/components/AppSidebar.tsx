@@ -4,9 +4,9 @@ import { useStore } from '@/store';
 import { useState, useEffect, useRef } from 'react';
 
 const NAV_ITEMS = [
-  { to: '/', icon: LayoutDashboard, label: 'Board' },
-  { to: '/clients', icon: Users, label: 'Clients' },
-  { to: '/metrics', icon: BarChart3, label: 'Metrics' },
+  { to: '/', icon: LayoutDashboard, label: 'Painel' },
+  { to: '/clients', icon: Users, label: 'Clientes' },
+  { to: '/metrics', icon: BarChart3, label: 'Métricas' },
 ];
 
 export function AppSidebar() {
@@ -66,7 +66,7 @@ export function AppSidebar() {
             className="flex items-center gap-3 px-3 py-2.5 rounded-[10px] text-[13px] font-medium text-sidebar-muted hover:text-sidebar-foreground hover:bg-sidebar-accent/50 transition-all duration-150 w-full"
           >
             <Search className="h-[18px] w-[18px]" />
-            <span>Search</span>
+            <span>Buscar</span>
             <kbd className="ml-auto text-[10px] text-sidebar-muted bg-sidebar-border px-1.5 py-0.5 rounded-md">⌘K</kbd>
           </button>
         </nav>
@@ -82,7 +82,7 @@ export function AppSidebar() {
               <input
                 ref={inputRef}
                 type="text"
-                placeholder="Search demands, clients, tags…"
+                placeholder="Buscar demandas, clientes, tags…"
                 className="flex-1 h-12 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
                 value={globalSearch}
                 onChange={(e) => setGlobalSearch(e.target.value)}
@@ -110,14 +110,14 @@ function SearchResults({ onClose }: { onClose: () => void }) {
   ).slice(0, 3);
 
   if (!matchedDemands.length && !matchedClients.length) {
-    return <div className="px-3 py-4 text-sm text-muted-foreground">No results found.</div>;
+    return <div className="px-3 py-4 text-sm text-muted-foreground">Nenhum resultado encontrado.</div>;
   }
 
   return (
     <div className="border-t border-border py-1">
       {matchedDemands.length > 0 && (
         <div>
-          <div className="px-3 py-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Demands</div>
+          <div className="px-3 py-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Demandas</div>
           {matchedDemands.map((d) => (
             <button
               key={d.id}
@@ -131,7 +131,7 @@ function SearchResults({ onClose }: { onClose: () => void }) {
       )}
       {matchedClients.length > 0 && (
         <div>
-          <div className="px-3 py-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Clients</div>
+          <div className="px-3 py-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Clientes</div>
           {matchedClients.map((c) => (
             <Link
               key={c.id}

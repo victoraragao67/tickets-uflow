@@ -68,7 +68,7 @@ export function KanbanCard({ demand }: Props) {
         </span>
         {demand.isBlocked && (
           <span className="inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[11px] font-medium bg-accent-blocked/12 text-accent-blocked">
-            <AlertCircle className="h-3 w-3" /> Blocked
+            <AlertCircle className="h-3 w-3" /> Bloqueado
           </span>
         )}
       </div>
