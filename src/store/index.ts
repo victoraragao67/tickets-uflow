@@ -137,13 +137,13 @@ export const useStore = create<AppState>((set, get) => ({
       demands: s.demands.map((d) => d.id === id ? { ...d, ...updates, lastUpdated: now() } : d),
     }));
     if (updates.assignee) {
-      get().addActivity({ demandId: id, type: 'assigned', description: `Assigned to ${updates.assignee}`, user: 'System' });
+      get().addActivity({ demandId: id, type: 'assigned', description: `Atribuído a ${updates.assignee}`, user: 'Sistema' });
     }
     if (updates.isBlocked === true) {
-      get().addActivity({ demandId: id, type: 'blocked', description: `Blocked: ${updates.blockerReason || 'Unknown'}`, user: updates.blockedBy || 'System' });
+      get().addActivity({ demandId: id, type: 'blocked', description: `Bloqueado: ${updates.blockerReason || 'Desconhecido'}`, user: updates.blockedBy || 'Sistema' });
     }
     if (updates.isBlocked === false) {
-      get().addActivity({ demandId: id, type: 'unblocked', description: 'Unblocked', user: 'System' });
+      get().addActivity({ demandId: id, type: 'unblocked', description: 'Desbloqueado', user: 'Sistema' });
     }
   },
 
