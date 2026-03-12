@@ -3,12 +3,12 @@ import type { Demand, KanbanColumn, Client, DemandType, ActivityEvent, Comment }
 
 const DEFAULT_COLUMNS: KanbanColumn[] = [
   { id: 'backlog', title: 'Backlog', order: 0, collapsed: false },
-  { id: 'todo', title: 'To Do', order: 1, collapsed: false },
-  { id: 'in_progress', title: 'In Progress', order: 2, collapsed: false },
-  { id: 'waiting', title: 'Waiting', order: 3, collapsed: false },
-  { id: 'review', title: 'Review', order: 4, collapsed: false },
-  { id: 'done', title: 'Done', order: 5, collapsed: false },
-  { id: 'canceled', title: 'Canceled', order: 6, collapsed: false },
+  { id: 'todo', title: 'A Fazer', order: 1, collapsed: false },
+  { id: 'in_progress', title: 'Em Progresso', order: 2, collapsed: false },
+  { id: 'waiting', title: 'Aguardando', order: 3, collapsed: false },
+  { id: 'review', title: 'Em Revisão', order: 4, collapsed: false },
+  { id: 'done', title: 'Concluído', order: 5, collapsed: false },
+  { id: 'canceled', title: 'Cancelado', order: 6, collapsed: false },
 ];
 
 const DEFAULT_DEMAND_TYPES: DemandType[] = [
