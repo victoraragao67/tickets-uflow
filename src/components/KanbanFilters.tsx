@@ -58,7 +58,7 @@ export function KanbanFilters() {
           <SelectValue placeholder="Assignee" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Assignees</SelectItem>
+          <SelectItem value="all">Todos os Responsáveis</SelectItem>
           {assignees.map((a) => (
             <SelectItem key={a} value={a}>{a}</SelectItem>
           ))}
