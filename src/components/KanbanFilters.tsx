@@ -24,7 +24,7 @@ export function KanbanFilters() {
           <SelectValue placeholder="Client" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Clients</SelectItem>
+          <SelectItem value="all">Todos os Clientes</SelectItem>
           {clients.map((c) => (
             <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
           ))}
