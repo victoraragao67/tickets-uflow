@@ -12,12 +12,12 @@ const DEFAULT_COLUMNS: KanbanColumn[] = [
 ];
 
 const DEFAULT_DEMAND_TYPES: DemandType[] = [
-  { id: 'dt1', name: 'support', label: 'Support', color: '210 70% 55%', description: 'General support requests' },
-  { id: 'dt2', name: 'bug', label: 'Bug', color: '0 72% 51%', description: 'Bug reports and fixes' },
-  { id: 'dt3', name: 'improvement', label: 'Improvement', color: '280 60% 55%', description: 'Improvements to existing features' },
-  { id: 'dt4', name: 'feature_request', label: 'Feature Request', color: '170 60% 45%', description: 'New feature requests' },
-  { id: 'dt5', name: 'commercial_request', label: 'Commercial', color: '30 80% 50%', description: 'Commercial and business requests' },
-  { id: 'dt6', name: 'technical_investigation', label: 'Investigation', color: '240 40% 55%', description: 'Technical research and investigation' },
+  { id: 'dt1', name: 'support', label: 'Suporte', color: '210 70% 55%', description: 'Solicitações gerais de suporte' },
+  { id: 'dt2', name: 'bug', label: 'Bug', color: '0 72% 51%', description: 'Relatórios e correções de bugs' },
+  { id: 'dt3', name: 'improvement', label: 'Ajuste', color: '280 60% 55%', description: 'Melhorias em funcionalidades existentes' },
+  { id: 'dt4', name: 'feature_request', label: 'Nova Funcionalidade', color: '170 60% 45%', description: 'Solicitações de novas funcionalidades' },
+  { id: 'dt5', name: 'commercial_request', label: 'Comercial', color: '30 80% 50%', description: 'Solicitações comerciais e de negócios' },
+  { id: 'dt6', name: 'technical_investigation', label: 'Investigação', color: '240 40% 55%', description: 'Pesquisa e investigação técnica' },
 ];
 
 const DEFAULT_CLIENTS: Client[] = [
