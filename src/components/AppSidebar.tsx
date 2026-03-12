@@ -66,7 +66,7 @@ export function AppSidebar() {
             className="flex items-center gap-3 px-3 py-2.5 rounded-[10px] text-[13px] font-medium text-sidebar-muted hover:text-sidebar-foreground hover:bg-sidebar-accent/50 transition-all duration-150 w-full"
           >
             <Search className="h-[18px] w-[18px]" />
-            <span>Search</span>
+            <span>Buscar</span>
             <kbd className="ml-auto text-[10px] text-sidebar-muted bg-sidebar-border px-1.5 py-0.5 rounded-md">⌘K</kbd>
           </button>
         </nav>
