@@ -69,9 +69,9 @@ export function KanbanFilters() {
           <SelectValue placeholder="Blocked" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Status</SelectItem>
-          <SelectItem value="blocked">Blocked</SelectItem>
-          <SelectItem value="not_blocked">Not Blocked</SelectItem>
+          <SelectItem value="all">Todos os Status</SelectItem>
+          <SelectItem value="blocked">Bloqueado</SelectItem>
+          <SelectItem value="not_blocked">Não Bloqueado</SelectItem>
         </SelectContent>
       </Select>
       {hasFilters && (
