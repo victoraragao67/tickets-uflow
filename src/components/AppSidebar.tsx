@@ -82,7 +82,7 @@ export function AppSidebar() {
               <input
                 ref={inputRef}
                 type="text"
-                placeholder="Search demands, clients, tags…"
+                placeholder="Buscar demandas, clientes, tags…"
                 className="flex-1 h-12 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
                 value={globalSearch}
                 onChange={(e) => setGlobalSearch(e.target.value)}
