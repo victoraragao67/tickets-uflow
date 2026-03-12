@@ -1,7 +1,7 @@
 import { useStore } from '@/store';
 import type { KanbanColumn as ColumnType, Demand } from '@/types';
 import { KanbanCard } from './KanbanCard';
-import { ChevronRight, Plus } from 'lucide-react';
+import { ChevronRight, Plus, MoreHorizontal } from 'lucide-react';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useState } from 'react';
@@ -54,7 +54,7 @@ export function KanbanColumn({ column, demands }: Props) {
     return (
       <button
         onClick={() => toggleColumnCollapse(column.id)}
-        className="flex h-full min-h-[400px] w-10 flex-col items-center gap-2 rounded-lg bg-muted/50 pt-4 transition-all duration-300"
+        className="flex h-full min-h-[400px] w-10 flex-col items-center gap-2 rounded-2xl bg-card card-shadow pt-4 transition-all duration-200 hover:card-shadow-hover"
       >
         <ChevronRight className="h-4 w-4 text-muted-foreground" />
         <span className="text-[11px] font-medium text-muted-foreground [writing-mode:vertical-lr] rotate-180">
@@ -66,31 +66,40 @@ export function KanbanColumn({ column, demands }: Props) {
   }
 
   return (
-    <div className="flex min-w-[320px] max-w-[380px] flex-col rounded-lg">
+    <div className="flex min-w-[300px] max-w-[340px] flex-col">
+      {/* Column header */}
       <div className="flex items-center justify-between px-1 pb-3">
         <button
           onClick={() => toggleColumnCollapse(column.id)}
           className="flex items-center gap-2 group/header"
         >
-          <h2 className="text-[13px] font-medium text-muted-foreground heading-tight">{column.title}</h2>
-          <span className="text-[11px] text-muted-foreground/70 text-tabular">{demands.length}</span>
+          <h2 className="text-[13px] font-semibold text-foreground heading-tight">{column.title}</h2>
+          <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-muted text-[11px] font-medium text-muted-foreground text-tabular px-1.5">
+            {demands.length}
+          </span>
         </button>
-        <button
-          onClick={() => setCreating(true)}
-          className="flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
-        >
-          <Plus className="h-3.5 w-3.5" />
-        </button>
+        <div className="flex items-center gap-0.5">
+          <button
+            onClick={() => setCreating(true)}
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors duration-150"
+          >
+            <Plus className="h-4 w-4" />
+          </button>
+          <button className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors duration-150">
+            <MoreHorizontal className="h-4 w-4" />
+          </button>
+        </div>
       </div>
 
+      {/* Column body */}
       <div
         ref={setNodeRef}
-        className={`flex flex-1 flex-col gap-2 rounded-lg p-1 min-h-[100px] transition-colors duration-150 ${
-          isOver ? 'bg-accent/60' : ''
+        className={`flex flex-1 flex-col gap-2.5 rounded-2xl p-2.5 min-h-[120px] transition-colors duration-150 ${
+          isOver ? 'bg-accent/80' : 'bg-muted/40'
         }`}
       >
         {creating && (
-          <div className="rounded-lg bg-card card-shadow p-3">
+          <div className="rounded-xl bg-card card-shadow p-3">
             <input
               autoFocus
               placeholder="Demand title…"

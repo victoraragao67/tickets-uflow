@@ -26,7 +26,7 @@ export function ClientDetailPage() {
 
   if (!client) {
     return (
-      <div className="flex h-screen items-center justify-center">
+      <div className="flex h-screen items-center justify-center bg-background">
         <p className="text-muted-foreground">Client not found.</p>
       </div>
     );
@@ -48,43 +48,41 @@ export function ClientDetailPage() {
   };
 
   return (
-    <div className="flex h-screen flex-col">
-      <header className="flex items-center gap-3 border-b border-border px-6 py-4">
-        <Link to="/clients" className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-accent transition-colors">
+    <div className="flex h-screen flex-col bg-background">
+      <header className="flex items-center gap-3 px-8 py-5">
+        <Link to="/clients" className="flex h-9 w-9 items-center justify-center rounded-xl hover:bg-accent transition-colors">
           <ArrowLeft className="h-4 w-4" />
         </Link>
         <div className="flex-1">
-          <div className="flex items-center gap-2">
-            <h1 className="text-lg font-medium heading-tight">{client.name}</h1>
-            <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ${
-              client.status === 'active' ? 'bg-accent-low/15 text-accent-low' : 'bg-muted text-muted-foreground'
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-xl font-semibold heading-tight text-foreground">{client.name}</h1>
+            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-medium ${
+              client.status === 'active' ? 'bg-accent-low/12 text-accent-low' : 'bg-muted text-muted-foreground'
             }`}>
               {client.status}
             </span>
           </div>
-          <p className="text-[12px] text-muted-foreground mt-0.5">{client.company} · {client.segment}</p>
+          <p className="text-[13px] text-muted-foreground mt-0.5">{client.company} · {client.segment}</p>
         </div>
       </header>
 
-      <div className="flex-1 overflow-y-auto p-6 scrollbar-thin">
+      <div className="flex-1 overflow-y-auto px-8 pb-8 scrollbar-thin">
         <div className="grid grid-cols-3 gap-6">
           {/* Left Sidebar */}
           <div className="space-y-4">
-            {/* Contact */}
-            <div className="rounded-lg bg-card card-shadow p-4 space-y-3">
-              <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Contact</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center gap-2 text-muted-foreground"><Building2 className="h-3.5 w-3.5" />{client.contactName || '—'}</div>
-                <div className="flex items-center gap-2 text-muted-foreground"><Mail className="h-3.5 w-3.5" />{client.email || '—'}</div>
-                <div className="flex items-center gap-2 text-muted-foreground"><Phone className="h-3.5 w-3.5" />{client.phone || '—'}</div>
-                <div className="flex items-center gap-2 text-muted-foreground"><User className="h-3.5 w-3.5" />{client.accountManager || '—'}</div>
+            <div className="rounded-2xl bg-card card-shadow p-5 space-y-3">
+              <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Contact</h3>
+              <div className="space-y-2.5 text-sm">
+                <div className="flex items-center gap-2.5 text-muted-foreground"><Building2 className="h-3.5 w-3.5" />{client.contactName || '—'}</div>
+                <div className="flex items-center gap-2.5 text-muted-foreground"><Mail className="h-3.5 w-3.5" />{client.email || '—'}</div>
+                <div className="flex items-center gap-2.5 text-muted-foreground"><Phone className="h-3.5 w-3.5" />{client.phone || '—'}</div>
+                <div className="flex items-center gap-2.5 text-muted-foreground"><User className="h-3.5 w-3.5" />{client.accountManager || '—'}</div>
               </div>
             </div>
 
-            {/* Metrics */}
-            <div className="rounded-lg bg-card card-shadow p-4 space-y-3">
-              <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Metrics</h3>
-              <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-2xl bg-card card-shadow p-5 space-y-3">
+              <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Metrics</h3>
+              <div className="grid grid-cols-2 gap-4">
                 <Stat label="Total" value={clientDemands.length} />
                 <Stat label="Open" value={openDemands.length} />
                 <Stat label="Completed" value={doneDemands.length} />
@@ -97,8 +95,7 @@ export function ClientDetailPage() {
 
           {/* Main Content */}
           <div className="col-span-2 space-y-4">
-            {/* Tabs */}
-            <div className="flex border-b border-border gap-4">
+            <div className="flex border-b border-border gap-1">
               {([
                 { id: 'demands' as TabId, label: 'Demands', count: clientDemands.length },
                 { id: 'activity' as TabId, label: 'Activity', count: clientActivity.length },
@@ -107,18 +104,18 @@ export function ClientDetailPage() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-1.5 py-2.5 text-sm font-medium border-b-2 transition-colors ${
-                    activeTab === tab.id ? 'border-foreground text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'
+                  className={`flex items-center gap-1.5 px-3 py-2.5 text-sm font-medium rounded-t-lg transition-colors ${
+                    activeTab === tab.id ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   {tab.label}
-                  {tab.count != null && <span className="text-[10px] bg-muted rounded-full px-1.5">{tab.count}</span>}
+                  {tab.count != null && <span className="text-[10px] bg-accent text-accent-foreground rounded-full px-1.5 py-0.5">{tab.count}</span>}
                 </button>
               ))}
             </div>
 
             {activeTab === 'demands' && (
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 {clientDemands.length === 0 && <p className="text-sm text-muted-foreground">No demands yet.</p>}
                 {clientDemands.map((d) => {
                   const dt = demandTypes.find((t) => t.id === d.demandTypeId);
@@ -127,13 +124,13 @@ export function ClientDetailPage() {
                     <button
                       key={d.id}
                       onClick={() => setSelectedDemand(d.id)}
-                      className="w-full flex items-center justify-between rounded-lg bg-card card-shadow p-3 hover:card-shadow-hover transition-all duration-150 text-left"
+                      className="w-full flex items-center justify-between rounded-xl bg-card card-shadow p-3.5 hover:card-shadow-hover hover:-translate-y-0.5 transition-all duration-150 text-left"
                     >
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h4 className="text-sm font-medium">{d.title}</h4>
+                        <h4 className="text-sm font-medium text-foreground">{d.title}</h4>
                         {dt && (
                           <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium"
-                            style={{ backgroundColor: `hsl(${dt.color} / 0.12)`, color: `hsl(${dt.color})` }}>
+                            style={{ backgroundColor: `hsl(${dt.color} / 0.1)`, color: `hsl(${dt.color})` }}>
                             {dt.label}
                           </span>
                         )}
@@ -141,12 +138,12 @@ export function ClientDetailPage() {
                           {PRIORITY_CONFIG[d.priority].label}
                         </span>
                         {d.isBlocked && (
-                          <span className="inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[10px] font-medium bg-accent-blocked/15 text-accent-blocked">
+                          <span className="inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[10px] font-medium bg-accent-blocked/12 text-accent-blocked">
                             <AlertCircle className="h-3 w-3" /> Blocked
                           </span>
                         )}
                       </div>
-                      <span className="text-[11px] text-muted-foreground bg-muted rounded-full px-2 py-0.5">{col?.title}</span>
+                      <span className="text-[11px] text-muted-foreground bg-muted rounded-full px-2.5 py-0.5">{col?.title}</span>
                     </button>
                   );
                 })}
@@ -154,10 +151,10 @@ export function ClientDetailPage() {
             )}
 
             {activeTab === 'activity' && (
-              <div className="space-y-2">
+              <div className="space-y-1">
                 {clientActivity.length === 0 && <p className="text-sm text-muted-foreground">No activity yet.</p>}
                 {clientActivity.map((event) => (
-                  <div key={event.id} className="flex items-start gap-3">
+                  <div key={event.id} className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-accent/50 transition-colors">
                     <div className={`mt-1.5 h-2 w-2 rounded-full shrink-0 ${
                       event.type === 'blocked' ? 'bg-accent-blocked' :
                       event.type === 'completed' ? 'bg-accent-low' :
@@ -165,7 +162,7 @@ export function ClientDetailPage() {
                       'bg-muted-foreground/40'
                     }`} />
                     <div>
-                      <p className="text-sm">{event.description}</p>
+                      <p className="text-sm text-foreground">{event.description}</p>
                       <p className="text-[11px] text-muted-foreground text-tabular">{format(new Date(event.timestamp), 'MMM d, HH:mm')}</p>
                     </div>
                   </div>
@@ -176,7 +173,7 @@ export function ClientDetailPage() {
             {activeTab === 'notes' && (
               <div>
                 <Textarea
-                  className="min-h-[200px] bg-input border-none text-sm resize-none"
+                  className="min-h-[200px] rounded-xl border-border bg-background text-sm resize-none focus-visible:ring-ring"
                   value={client.notes}
                   onChange={(e) => updateClient(client.id, { notes: e.target.value })}
                   placeholder="Add notes about this client…"
@@ -200,8 +197,8 @@ export function ClientDetailPage() {
 function Stat({ label, value, highlight }: { label: string; value: string | number; highlight?: boolean }) {
   return (
     <div>
-      <div className="text-[11px] text-muted-foreground">{label}</div>
-      <div className={`text-sm font-medium text-tabular ${highlight ? 'text-accent-blocked' : ''}`}>{value}</div>
+      <div className="text-[11px] text-muted-foreground font-medium">{label}</div>
+      <div className={`text-lg font-bold text-tabular ${highlight ? 'text-accent-blocked' : 'text-foreground'}`}>{value}</div>
     </div>
   );
 }

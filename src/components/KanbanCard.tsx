@@ -1,7 +1,7 @@
 import { useStore } from '@/store';
 import { PRIORITY_CONFIG } from '@/types';
 import type { Demand } from '@/types';
-import { AlertCircle, Clock, GripVertical, Eye } from 'lucide-react';
+import { AlertCircle, Clock, GripVertical, Eye, MessageSquare } from 'lucide-react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
@@ -10,10 +10,11 @@ interface Props {
 }
 
 export function KanbanCard({ demand }: Props) {
-  const { clients, demandTypes, setSelectedDemand } = useStore();
+  const { clients, demandTypes, comments, setSelectedDemand } = useStore();
   const client = clients.find((c) => c.id === demand.clientId);
   const demandType = demandTypes.find((dt) => dt.id === demand.demandTypeId);
   const priorityConfig = PRIORITY_CONFIG[demand.priority];
+  const commentCount = comments.filter((c) => c.demandId === demand.id).length;
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: demand.id,
@@ -29,33 +30,33 @@ export function KanbanCard({ demand }: Props) {
     <div
       ref={setNodeRef}
       style={style}
-      className={`group relative rounded-lg bg-card p-3 cursor-pointer transition-all duration-150 ${
+      className={`group relative rounded-xl bg-card p-3.5 cursor-pointer transition-all duration-150 ${
         demand.isBlocked ? 'ring-1 ring-accent-blocked/30' : ''
       } ${
         isDragging
-          ? 'card-shadow-drag scale-[1.03] rotate-[2deg] z-50 opacity-90'
-          : 'card-shadow hover:card-shadow-hover hover:-translate-y-px'
+          ? 'card-shadow-drag scale-[1.02] rotate-[1.5deg] z-50 opacity-90'
+          : 'card-shadow hover:card-shadow-hover hover:-translate-y-0.5'
       }`}
       onClick={() => setSelectedDemand(demand.id)}
     >
       <div
-        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab"
+        className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab"
         {...attributes}
         {...listeners}
       >
         <GripVertical className="h-3.5 w-3.5 text-muted-foreground" />
       </div>
 
-      <div className="flex items-start gap-2 mb-2">
-        <h3 className="text-sm font-medium leading-snug tracking-tight flex-1 pr-4">{demand.title}</h3>
-      </div>
+      {/* Title */}
+      <h3 className="text-sm font-medium leading-snug tracking-tight pr-6 mb-2.5 text-foreground">{demand.title}</h3>
 
-      <div className="flex items-center gap-1.5 flex-wrap">
+      {/* Tags */}
+      <div className="flex items-center gap-1.5 flex-wrap mb-3">
         {demandType && (
           <span
             className="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium"
             style={{
-              backgroundColor: `hsl(${demandType.color} / 0.12)`,
+              backgroundColor: `hsl(${demandType.color} / 0.1)`,
               color: `hsl(${demandType.color})`,
             }}
           >
@@ -66,15 +67,21 @@ export function KanbanCard({ demand }: Props) {
           {priorityConfig.label}
         </span>
         {demand.isBlocked && (
-          <span className="inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[11px] font-medium bg-accent-blocked/15 text-accent-blocked">
+          <span className="inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[11px] font-medium bg-accent-blocked/12 text-accent-blocked">
             <AlertCircle className="h-3 w-3" /> Blocked
           </span>
         )}
       </div>
 
-      <div className="mt-2 flex items-center justify-between">
+      {/* Footer */}
+      <div className="flex items-center justify-between pt-2 border-t border-border">
         <span className="text-[11px] text-muted-foreground">{client?.name || '—'}</span>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
+          {commentCount > 0 && (
+            <span className="flex items-center gap-0.5 text-[11px] text-muted-foreground">
+              <MessageSquare className="h-3 w-3" />{commentCount}
+            </span>
+          )}
           {demand.watchers.length > 0 && (
             <span className="flex items-center gap-0.5 text-[11px] text-muted-foreground" title={`Watchers: ${demand.watchers.join(', ')}`}>
               <Eye className="h-3 w-3" />{demand.watchers.length}
@@ -86,7 +93,7 @@ export function KanbanCard({ demand }: Props) {
             </span>
           )}
           {demand.assignee && (
-            <div className="flex h-5 w-5 items-center justify-center rounded-full bg-muted text-[10px] font-medium text-muted-foreground" title={demand.assignee}>
+            <div className="flex h-6 w-6 items-center justify-center rounded-full gradient-primary text-[10px] font-medium text-primary-foreground" title={demand.assignee}>
               {demand.assignee.split(' ').map(n => n[0]).join('')}
             </div>
           )}

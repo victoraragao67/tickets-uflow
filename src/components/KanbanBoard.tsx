@@ -50,7 +50,6 @@ export function KanbanBoard() {
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
   );
 
-  // Filter demands
   const filteredDemands = demands.filter((d) => {
     if (filters.search && !d.title.toLowerCase().includes(filters.search.toLowerCase())) return false;
     if (filters.clientId && d.clientId !== filters.clientId) return false;
@@ -74,17 +73,13 @@ export function KanbanBoard() {
   const handleDragOver = (event: DragOverEvent) => {
     const { active, over } = event;
     if (!over) return;
-
     const activeId = active.id as string;
     const overId = over.id as string;
-
     const activeDemand = demands.find((d) => d.id === activeId);
     if (!activeDemand) return;
-
     const overColumn = columns.find((c) => c.id === overId);
     const overDemand = demands.find((d) => d.id === overId);
     const targetColumnId = overColumn?.id || overDemand?.columnId;
-
     if (targetColumnId && activeDemand.columnId !== targetColumnId) {
       moveDemand(activeId, targetColumnId, 0);
     }
@@ -94,14 +89,11 @@ export function KanbanBoard() {
     setActiveDemand(null);
     const { active, over } = event;
     if (!over) return;
-
     const activeId = active.id as string;
     const overId = over.id as string;
-
     const overColumn = columns.find((c) => c.id === overId);
     const overDemand = demands.find((d) => d.id === overId);
     const targetColumnId = overColumn?.id || overDemand?.columnId;
-
     if (targetColumnId) {
       const colDemands = demands.filter((d) => d.columnId === targetColumnId && d.id !== activeId);
       const overIndex = overDemand ? colDemands.findIndex((d) => d.id === overId) : colDemands.length;
@@ -110,25 +102,25 @@ export function KanbanBoard() {
   };
 
   return (
-    <div className="flex h-screen flex-col">
-      <header className="flex items-center justify-between border-b border-border px-6 py-4">
+    <div className="flex h-screen flex-col bg-background">
+      <header className="flex items-center justify-between px-8 py-5">
         <div>
-          <h1 className="text-lg font-medium heading-tight">Demands</h1>
-          <p className="text-[12px] text-muted-foreground mt-0.5">{filteredDemands.length} demands across {columns.length} columns</p>
+          <h1 className="text-xl font-semibold heading-tight text-foreground">Demands</h1>
+          <p className="text-[13px] text-muted-foreground mt-0.5">{filteredDemands.length} demands across {columns.length} columns</p>
         </div>
         <button
-          className="inline-flex items-center gap-1.5 h-9 px-3 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
+          className="inline-flex items-center gap-2 h-10 px-5 rounded-xl gradient-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-all duration-150 shadow-sm"
           onClick={() => addDemand(NEW_DEMAND_DEFAULTS)}
         >
           <Plus className="h-4 w-4" /> New Demand
         </button>
       </header>
 
-      <div className="px-6 pt-4">
+      <div className="px-8 pb-3">
         <KanbanFilters />
       </div>
 
-      <div className="flex-1 overflow-x-auto overflow-y-hidden px-6 pt-4 pb-6 scrollbar-thin">
+      <div className="flex-1 overflow-x-auto overflow-y-hidden px-8 pb-6 scrollbar-thin">
         <DndContext
           sensors={sensors}
           collisionDetection={closestCorners}
@@ -136,7 +128,7 @@ export function KanbanBoard() {
           onDragOver={handleDragOver}
           onDragEnd={handleDragEnd}
         >
-          <div className="flex gap-3 h-full">
+          <div className="flex gap-4 h-full">
             {sortedColumns.map((column) => (
               <KanbanColumn
                 key={column.id}
@@ -148,7 +140,7 @@ export function KanbanBoard() {
 
           <DragOverlay>
             {activeDemand ? (
-              <div className="card-shadow-drag scale-[1.03] rotate-[2deg]">
+              <div className="card-shadow-drag scale-[1.02] rotate-[1.5deg]">
                 <KanbanCard demand={activeDemand} />
               </div>
             ) : null}
