@@ -46,11 +46,11 @@ export function KanbanFilters() {
           <SelectValue placeholder="Priority" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Priorities</SelectItem>
-          <SelectItem value="urgent">Urgent</SelectItem>
-          <SelectItem value="high">High</SelectItem>
-          <SelectItem value="medium">Medium</SelectItem>
-          <SelectItem value="low">Low</SelectItem>
+          <SelectItem value="all">Todas as Prioridades</SelectItem>
+          <SelectItem value="urgent">Crítica</SelectItem>
+          <SelectItem value="high">Alta</SelectItem>
+          <SelectItem value="medium">Média</SelectItem>
+          <SelectItem value="low">Baixa</SelectItem>
         </SelectContent>
       </Select>
       <Select value={filters.assignee || "all"} onValueChange={(v) => setFilters({ assignee: v === 'all' ? '' : v })}>
