@@ -14,7 +14,7 @@ export function KanbanFilters() {
         <SlidersHorizontal className="h-4 w-4" />
       </div>
       <Input
-        placeholder="Search…"
+        placeholder="Buscar…"
         className="h-9 w-48 rounded-xl border-border bg-card text-sm card-shadow focus-visible:ring-ring"
         value={filters.search}
         onChange={(e) => setFilters({ search: e.target.value })}
