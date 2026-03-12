@@ -112,7 +112,7 @@ export function KanbanBoard() {
           className="inline-flex items-center gap-2 h-10 px-5 rounded-xl gradient-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-all duration-150 shadow-sm"
           onClick={() => addDemand(NEW_DEMAND_DEFAULTS)}
         >
-          <Plus className="h-4 w-4" /> New Demand
+          <Plus className="h-4 w-4" /> Nova Demanda
         </button>
       </header>
 
