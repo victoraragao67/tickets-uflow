@@ -63,6 +63,7 @@ interface AppState {
   demandTypes: DemandType[];
   activity: ActivityEvent[];
   comments: Comment[];
+  clientHistory: ClientHistoryEvent[];
   filters: Filters;
   selectedDemandId: string | null;
   globalSearch: string;
@@ -89,6 +90,7 @@ interface AppState {
 
   addActivity: (event: Omit<ActivityEvent, 'id' | 'timestamp'>) => void;
   addComment: (comment: Omit<Comment, 'id' | 'timestamp'>) => void;
+  addClientHistoryEvent: (event: Omit<ClientHistoryEvent, 'id' | 'timestamp'>) => void;
 }
 
 const DEFAULT_FILTERS: Filters = {
