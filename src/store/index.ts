@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Demand, KanbanColumn, Client, DemandType, ActivityEvent, Comment } from '@/types';
+import type { Demand, KanbanColumn, Client, DemandType, ActivityEvent, Comment, ClientHistoryEvent } from '@/types';
 
 const DEFAULT_COLUMNS: KanbanColumn[] = [
   { id: 'backlog', title: 'Backlog', order: 0, collapsed: false },
@@ -21,9 +21,9 @@ const DEFAULT_DEMAND_TYPES: DemandType[] = [
 ];
 
 const DEFAULT_CLIENTS: Client[] = [
-  { id: 'c1', name: 'Acme Corp', company: 'Acme Corporation', segment: 'Corporativo', contactName: 'João Silva', email: 'joao@acme.com', phone: '+55 11 99999-0101', notes: 'Conta corporativa estratégica', status: 'active', createdAt: '2024-01-15T10:00:00Z', accountManager: 'Jordan Lee' },
-  { id: 'c2', name: 'TechStart', company: 'TechStart Inc', segment: 'Startup', contactName: 'Sara Chen', email: 'sara@techstart.io', phone: '+55 11 99999-0102', notes: 'Startup em crescimento acelerado', status: 'active', createdAt: '2024-02-20T10:00:00Z', accountManager: 'Sam Taylor' },
-  { id: 'c3', name: 'GlobalRetail', company: 'Global Retail Ltda', segment: 'Varejo', contactName: 'Marcos Souza', email: 'marcos@globalretail.com', phone: '+55 11 99999-0103', notes: 'Grande rede de varejo', status: 'active', createdAt: '2024-03-10T10:00:00Z', accountManager: 'Alex Rivera' },
+  { id: 'c1', name: 'Acme Corp', company: 'Acme Corporation', segment: 'Corporativo', contactName: 'João Silva', email: 'joao@acme.com', phone: '+55 11 99999-0101', website: 'https://acme.com', notes: 'Conta corporativa estratégica', status: 'active', createdAt: '2024-01-15T10:00:00Z', accountManager: 'Jordan Lee' },
+  { id: 'c2', name: 'TechStart', company: 'TechStart Inc', segment: 'Startup', contactName: 'Sara Chen', email: 'sara@techstart.io', phone: '+55 11 99999-0102', website: 'https://techstart.io', notes: 'Startup em crescimento acelerado', status: 'active', createdAt: '2024-02-20T10:00:00Z', accountManager: 'Sam Taylor' },
+  { id: 'c3', name: 'GlobalRetail', company: 'Global Retail Ltda', segment: 'Varejo', contactName: 'Marcos Souza', email: 'marcos@globalretail.com', phone: '+55 11 99999-0103', website: 'https://globalretail.com', notes: 'Grande rede de varejo', status: 'active', createdAt: '2024-03-10T10:00:00Z', accountManager: 'Alex Rivera' },
 ];
 
 const now = () => new Date().toISOString();
@@ -63,6 +63,7 @@ interface AppState {
   demandTypes: DemandType[];
   activity: ActivityEvent[];
   comments: Comment[];
+  clientHistory: ClientHistoryEvent[];
   filters: Filters;
   selectedDemandId: string | null;
   globalSearch: string;
@@ -89,6 +90,7 @@ interface AppState {
 
   addActivity: (event: Omit<ActivityEvent, 'id' | 'timestamp'>) => void;
   addComment: (comment: Omit<Comment, 'id' | 'timestamp'>) => void;
+  addClientHistoryEvent: (event: Omit<ClientHistoryEvent, 'id' | 'timestamp'>) => void;
 }
 
 const DEFAULT_FILTERS: Filters = {
@@ -113,6 +115,11 @@ export const useStore = create<AppState>((set, get) => ({
   demandTypes: DEFAULT_DEMAND_TYPES,
   activity: SAMPLE_ACTIVITY,
   comments: [],
+  clientHistory: [
+    { id: 'ch1', clientId: 'c1', type: 'created', description: 'Cliente criado', user: 'Sistema', timestamp: '2024-01-15T10:00:00Z' },
+    { id: 'ch2', clientId: 'c2', type: 'created', description: 'Cliente criado', user: 'Sistema', timestamp: '2024-02-20T10:00:00Z' },
+    { id: 'ch3', clientId: 'c3', type: 'created', description: 'Cliente criado', user: 'Sistema', timestamp: '2024-03-10T10:00:00Z' },
+  ],
   filters: DEFAULT_FILTERS,
   selectedDemandId: null,
   globalSearch: '',
@@ -183,11 +190,31 @@ export const useStore = create<AppState>((set, get) => ({
 
   addClient: (client) => {
     const id = genId('c');
-    set((s) => ({ clients: [...s.clients, { ...client, id, createdAt: now() }] }));
+    const n = now();
+    set((s) => ({ clients: [...s.clients, { ...client, id, createdAt: n }] }));
+    get().addClientHistoryEvent({ clientId: id, type: 'created', description: 'Cliente criado', user: 'Sistema' });
   },
 
   updateClient: (id, updates) => {
+    const prev = get().clients.find((c) => c.id === id);
     set((s) => ({ clients: s.clients.map((c) => c.id === id ? { ...c, ...updates } : c) }));
+    if (prev) {
+      const changes: Record<string, { from: string; to: string }> = {};
+      const labels: Record<string, string> = { name: 'Nome', company: 'Empresa', segment: 'Segmento', accountManager: 'Responsável', email: 'E-mail', phone: 'Telefone', website: 'Website', status: 'Status', contactName: 'Contato' };
+      for (const key of Object.keys(labels)) {
+        const k = key as keyof Client;
+        if (updates[k] !== undefined && updates[k] !== prev[k]) {
+          changes[key] = { from: String(prev[k] || ''), to: String(updates[k] || '') };
+        }
+      }
+      if (Object.keys(changes).length > 0) {
+        const desc = Object.entries(changes).map(([k, v]) => `${labels[k]}: "${v.from}" → "${v.to}"`).join(', ');
+        const type = updates.status === 'inactive' && prev.status === 'active' ? 'archived' as const
+          : updates.status === 'active' && prev.status === 'inactive' ? 'reactivated' as const
+          : 'updated' as const;
+        get().addClientHistoryEvent({ clientId: id, type, description: desc, user: 'Sistema', changes });
+      }
+    }
   },
 
   toggleColumnCollapse: (columnId) => {
@@ -229,5 +256,10 @@ export const useStore = create<AppState>((set, get) => ({
       description: `Comentário adicionado por ${comment.user}`,
       user: comment.user,
     });
+  },
+
+  addClientHistoryEvent: (event) => {
+    const id = genId('ch');
+    set((s) => ({ clientHistory: [...s.clientHistory, { ...event, id, timestamp: now() }] }));
   },
 }));
