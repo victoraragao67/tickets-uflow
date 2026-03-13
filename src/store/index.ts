@@ -257,4 +257,9 @@ export const useStore = create<AppState>((set, get) => ({
       user: comment.user,
     });
   },
+
+  addClientHistoryEvent: (event) => {
+    const id = genId('ch');
+    set((s) => ({ clientHistory: [...s.clientHistory, { ...event, id, timestamp: now() }] }));
+  },
 }));
