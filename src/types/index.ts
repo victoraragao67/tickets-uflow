@@ -18,10 +18,21 @@ export interface Client {
   contactName: string;
   email: string;
   phone: string;
+  website: string;
   notes: string;
   status: 'active' | 'inactive';
   createdAt: string;
-  accountManager?: string;
+  accountManager: string;
+}
+
+export interface ClientHistoryEvent {
+  id: string;
+  clientId: string;
+  type: 'created' | 'updated' | 'archived' | 'reactivated';
+  description: string;
+  user: string;
+  timestamp: string;
+  changes?: Record<string, { from: string; to: string }>;
 }
 
 export interface ActivityEvent {
