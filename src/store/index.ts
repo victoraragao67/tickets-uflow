@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Demand, KanbanColumn, Client, DemandType, ActivityEvent, Comment } from '@/types';
+import type { Demand, KanbanColumn, Client, DemandType, ActivityEvent, Comment, ClientHistoryEvent } from '@/types';
 
 const DEFAULT_COLUMNS: KanbanColumn[] = [
   { id: 'backlog', title: 'Backlog', order: 0, collapsed: false },
