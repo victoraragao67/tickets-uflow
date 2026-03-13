@@ -190,11 +190,31 @@ export const useStore = create<AppState>((set, get) => ({
 
   addClient: (client) => {
     const id = genId('c');
-    set((s) => ({ clients: [...s.clients, { ...client, id, createdAt: now() }] }));
+    const n = now();
+    set((s) => ({ clients: [...s.clients, { ...client, id, createdAt: n }] }));
+    get().addClientHistoryEvent({ clientId: id, type: 'created', description: 'Cliente criado', user: 'Sistema' });
   },
 
   updateClient: (id, updates) => {
+    const prev = get().clients.find((c) => c.id === id);
     set((s) => ({ clients: s.clients.map((c) => c.id === id ? { ...c, ...updates } : c) }));
+    if (prev) {
+      const changes: Record<string, { from: string; to: string }> = {};
+      const labels: Record<string, string> = { name: 'Nome', company: 'Empresa', segment: 'Segmento', accountManager: 'Responsável', email: 'E-mail', phone: 'Telefone', website: 'Website', status: 'Status', contactName: 'Contato' };
+      for (const key of Object.keys(labels)) {
+        const k = key as keyof Client;
+        if (updates[k] !== undefined && updates[k] !== prev[k]) {
+          changes[key] = { from: String(prev[k] || ''), to: String(updates[k] || '') };
+        }
+      }
+      if (Object.keys(changes).length > 0) {
+        const desc = Object.entries(changes).map(([k, v]) => `${labels[k]}: "${v.from}" → "${v.to}"`).join(', ');
+        const type = updates.status === 'inactive' && prev.status === 'active' ? 'archived' as const
+          : updates.status === 'active' && prev.status === 'inactive' ? 'reactivated' as const
+          : 'updated' as const;
+        get().addClientHistoryEvent({ clientId: id, type, description: desc, user: 'Sistema', changes });
+      }
+    }
   },
 
   toggleColumnCollapse: (columnId) => {
