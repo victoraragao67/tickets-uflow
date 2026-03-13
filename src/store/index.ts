@@ -115,6 +115,11 @@ export const useStore = create<AppState>((set, get) => ({
   demandTypes: DEFAULT_DEMAND_TYPES,
   activity: SAMPLE_ACTIVITY,
   comments: [],
+  clientHistory: [
+    { id: 'ch1', clientId: 'c1', type: 'created', description: 'Cliente criado', user: 'Sistema', timestamp: '2024-01-15T10:00:00Z' },
+    { id: 'ch2', clientId: 'c2', type: 'created', description: 'Cliente criado', user: 'Sistema', timestamp: '2024-02-20T10:00:00Z' },
+    { id: 'ch3', clientId: 'c3', type: 'created', description: 'Cliente criado', user: 'Sistema', timestamp: '2024-03-10T10:00:00Z' },
+  ],
   filters: DEFAULT_FILTERS,
   selectedDemandId: null,
   globalSearch: '',
