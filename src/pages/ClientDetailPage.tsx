@@ -30,6 +30,18 @@ export function ClientDetailPage() {
     return total / completed.length;
   }, [clientDemands]);
 
+  const filteredDemands = useMemo(() => {
+    let list = clientDemands;
+    if (ticketSearch) {
+      const q = ticketSearch.toLowerCase();
+      list = list.filter((d) => d.title.toLowerCase().includes(q));
+    }
+    if (ticketStatus === 'open') list = list.filter((d) => d.columnId !== 'done' && d.columnId !== 'canceled');
+    if (ticketStatus === 'done') list = list.filter((d) => d.columnId === 'done');
+    if (ticketStatus === 'blocked') list = list.filter((d) => d.isBlocked);
+    return list;
+  }, [clientDemands, ticketSearch, ticketStatus]);
+
   if (!client) {
     return (
       <div className="flex h-screen items-center justify-center bg-background">
@@ -47,7 +59,6 @@ export function ClientDetailPage() {
     .filter((h) => h.clientId === client.id)
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
-  // Also include demand creation events in history
   const demandCreationEvents = clientDemands.map((d) => ({
     id: `dh-${d.id}`,
     clientId: client.id,
@@ -59,18 +70,6 @@ export function ClientDetailPage() {
 
   const fullHistory = [...history, ...demandCreationEvents]
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-
-  const filteredDemands = useMemo(() => {
-    let list = clientDemands;
-    if (ticketSearch) {
-      const q = ticketSearch.toLowerCase();
-      list = list.filter((d) => d.title.toLowerCase().includes(q));
-    }
-    if (ticketStatus === 'open') list = list.filter((d) => d.columnId !== 'done' && d.columnId !== 'canceled');
-    if (ticketStatus === 'done') list = list.filter((d) => d.columnId === 'done');
-    if (ticketStatus === 'blocked') list = list.filter((d) => d.isBlocked);
-    return list;
-  }, [clientDemands, ticketSearch, ticketStatus]);
 
   const formatCycleTime = (h: number | null) => {
     if (h === null) return '—';
