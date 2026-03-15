@@ -200,7 +200,7 @@ export const useStore = create<AppState>((set, get) => ({
     set((s) => ({ clients: s.clients.map((c) => c.id === id ? { ...c, ...updates } : c) }));
     if (prev) {
       const changes: Record<string, { from: string; to: string }> = {};
-      const labels: Record<string, string> = { name: 'Nome', company: 'Empresa', segment: 'Segmento', accountManager: 'Responsável', email: 'E-mail', phone: 'Telefone', website: 'Website', status: 'Status', contactName: 'Contato' };
+      const labels: Record<string, string> = { name: 'Nome', company: 'Empresa', segment: 'Segmento', accountManager: 'Responsável', email: 'E-mail', phone: 'Telefone', website: 'Website', status: 'Status', contactName: 'Contato', plan: 'Plano', healthScore: 'Saúde', riskLevel: 'Risco', satisfaction: 'Satisfação', strategicNotes: 'Notas Estratégicas' };
       for (const key of Object.keys(labels)) {
         const k = key as keyof Client;
         if (updates[k] !== undefined && updates[k] !== prev[k]) {

@@ -10,6 +10,29 @@ export interface DemandType {
   description: string;
 }
 
+export type ClientPlan = 'starter' | 'professional' | 'enterprise' | 'custom';
+export type ClientHealth = 'healthy' | 'attention' | 'critical';
+export type ClientRisk = 'low' | 'medium' | 'high';
+
+export const CLIENT_PLAN_CONFIG: Record<ClientPlan, { label: string; className: string }> = {
+  starter: { label: 'Starter', className: 'bg-muted text-muted-foreground' },
+  professional: { label: 'Professional', className: 'bg-primary/15 text-primary' },
+  enterprise: { label: 'Enterprise', className: 'bg-accent-medium/15 text-accent-medium' },
+  custom: { label: 'Personalizado', className: 'bg-accent-high/15 text-accent-high' },
+};
+
+export const CLIENT_HEALTH_CONFIG: Record<ClientHealth, { label: string; className: string }> = {
+  healthy: { label: 'Saudável', className: 'bg-accent-low/15 text-accent-low' },
+  attention: { label: 'Atenção', className: 'bg-accent-medium/15 text-accent-medium' },
+  critical: { label: 'Crítico', className: 'bg-accent-urgent/15 text-accent-urgent' },
+};
+
+export const CLIENT_RISK_CONFIG: Record<ClientRisk, { label: string; className: string }> = {
+  low: { label: 'Baixo', className: 'bg-accent-low/15 text-accent-low' },
+  medium: { label: 'Médio', className: 'bg-accent-medium/15 text-accent-medium' },
+  high: { label: 'Alto', className: 'bg-accent-urgent/15 text-accent-urgent' },
+};
+
 export interface Client {
   id: string;
   name: string;
@@ -23,6 +46,11 @@ export interface Client {
   status: 'active' | 'inactive';
   createdAt: string;
   accountManager: string;
+  plan: ClientPlan;
+  healthScore: ClientHealth;
+  riskLevel: ClientRisk;
+  satisfaction: number; // 1-5
+  strategicNotes: string;
 }
 
 export interface ClientHistoryEvent {
