@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { useStore } from '@/store';
-import { ArrowLeft, Mail, Phone, Building2, User, Globe, AlertCircle, Pencil, Clock, CheckCircle, Loader2 } from 'lucide-react';
-import { PRIORITY_CONFIG } from '@/types';
+import { ArrowLeft, Mail, Phone, Building2, User, Globe, AlertCircle, Pencil, Clock, CheckCircle, Loader2, Star, Shield, HeartPulse, CreditCard } from 'lucide-react';
+import { PRIORITY_CONFIG, CLIENT_PLAN_CONFIG, CLIENT_HEALTH_CONFIG, CLIENT_RISK_CONFIG } from '@/types';
 import { format, differenceInHours, parseISO } from 'date-fns';
 import { useState, useMemo } from 'react';
 import { Textarea } from '@/components/ui/textarea';
@@ -9,13 +9,13 @@ import { Input } from '@/components/ui/input';
 import { DemandDetailModal } from '@/components/DemandDetailModal';
 import { ClientFormModal } from '@/components/ClientFormModal';
 
-type TabId = 'info' | 'demands' | 'metrics' | 'history' | 'notes';
+type TabId = 'summary' | 'demands' | 'metrics' | 'relationship';
 
 export function ClientDetailPage() {
   const { id } = useParams<{ id: string }>();
   const store = useStore();
-  const { clients, demands, demandTypes, columns, activity, clientHistory, updateClient, setSelectedDemand, selectedDemandId } = store;
-  const [activeTab, setActiveTab] = useState<TabId>('info');
+  const { clients, demands, demandTypes, columns, clientHistory, updateClient, setSelectedDemand, selectedDemandId } = store;
+  const [activeTab, setActiveTab] = useState<TabId>('summary');
   const [editOpen, setEditOpen] = useState(false);
   const [ticketSearch, setTicketSearch] = useState('');
   const [ticketStatus, setTicketStatus] = useState('all');
@@ -77,12 +77,15 @@ export function ClientDetailPage() {
     return `${(h / 24).toFixed(1)}d`;
   };
 
+  const planCfg = CLIENT_PLAN_CONFIG[client.plan];
+  const healthCfg = CLIENT_HEALTH_CONFIG[client.healthScore];
+  const riskCfg = CLIENT_RISK_CONFIG[client.riskLevel];
+
   const tabs: { id: TabId; label: string }[] = [
-    { id: 'info', label: 'Informações' },
+    { id: 'summary', label: 'Resumo da Conta' },
     { id: 'demands', label: `Tickets (${clientDemands.length})` },
     { id: 'metrics', label: 'Métricas' },
-    { id: 'history', label: 'Histórico' },
-    { id: 'notes', label: 'Observações' },
+    { id: 'relationship', label: 'Relacionamento' },
   ];
 
   return (
@@ -98,6 +101,9 @@ export function ClientDetailPage() {
               client.status === 'active' ? 'bg-accent-low/12 text-accent-low' : 'bg-muted text-muted-foreground'
             }`}>
               {client.status === 'active' ? 'Ativo' : 'Inativo'}
+            </span>
+            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-medium ${planCfg.className}`}>
+              {planCfg.label}
             </span>
           </div>
           <p className="text-[13px] text-muted-foreground mt-0.5">{client.company} · {client.segment}</p>
@@ -126,27 +132,41 @@ export function ClientDetailPage() {
       </div>
 
       <div className="flex-1 overflow-y-auto px-8 py-6 pb-8 scrollbar-thin">
-        {/* INFO TAB */}
-        {activeTab === 'info' && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-4xl">
-            <div className="rounded-2xl bg-card card-shadow p-6 space-y-4">
-              <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Dados do Cliente</h3>
-              <div className="space-y-3 text-sm">
-                <InfoRow icon={<Building2 className="h-4 w-4" />} label="Empresa" value={client.company} />
-                <InfoRow icon={<User className="h-4 w-4" />} label="Segmento" value={client.segment} />
-                <InfoRow icon={<User className="h-4 w-4" />} label="Responsável Interno" value={client.accountManager} />
+        {/* SUMMARY TAB */}
+        {activeTab === 'summary' && (
+          <div className="space-y-6 max-w-4xl">
+            {/* Account Health Cards */}
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+              <CSCard icon={<CreditCard className="h-5 w-5 text-primary" />} label="Plano" value={planCfg.label} badgeClass={planCfg.className} />
+              <CSCard icon={<HeartPulse className="h-5 w-5 text-accent-low" />} label="Saúde" value={healthCfg.label} badgeClass={healthCfg.className} />
+              <CSCard icon={<Shield className="h-5 w-5 text-accent-high" />} label="Risco" value={riskCfg.label} badgeClass={riskCfg.className} />
+              <CSCard icon={<Star className="h-5 w-5 text-accent-medium" />} label="Satisfação" value={`${'★'.repeat(client.satisfaction)}${'☆'.repeat(5 - client.satisfaction)}`} />
+              <CSCard icon={<User className="h-5 w-5 text-muted-foreground" />} label="Responsável" value={client.accountManager || '—'} />
+            </div>
+
+            {/* Client Info */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="rounded-2xl bg-card card-shadow p-6 space-y-4">
+                <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Dados do Cliente</h3>
+                <div className="space-y-3 text-sm">
+                  <InfoRow icon={<Building2 className="h-4 w-4" />} label="Empresa" value={client.company} />
+                  <InfoRow icon={<User className="h-4 w-4" />} label="Segmento" value={client.segment} />
+                  <InfoRow icon={<User className="h-4 w-4" />} label="Responsável" value={client.accountManager} />
+                </div>
+              </div>
+              <div className="rounded-2xl bg-card card-shadow p-6 space-y-4">
+                <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Contato</h3>
+                <div className="space-y-3 text-sm">
+                  <InfoRow icon={<User className="h-4 w-4" />} label="Nome do Contato" value={client.contactName} />
+                  <InfoRow icon={<Mail className="h-4 w-4" />} label="E-mail" value={client.email} />
+                  <InfoRow icon={<Phone className="h-4 w-4" />} label="Telefone" value={client.phone} />
+                  <InfoRow icon={<Globe className="h-4 w-4" />} label="Website" value={client.website} isLink />
+                </div>
               </div>
             </div>
-            <div className="rounded-2xl bg-card card-shadow p-6 space-y-4">
-              <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Contato</h3>
-              <div className="space-y-3 text-sm">
-                <InfoRow icon={<User className="h-4 w-4" />} label="Nome do Contato" value={client.contactName} />
-                <InfoRow icon={<Mail className="h-4 w-4" />} label="E-mail" value={client.email} />
-                <InfoRow icon={<Phone className="h-4 w-4" />} label="Telefone" value={client.phone} />
-                <InfoRow icon={<Globe className="h-4 w-4" />} label="Website" value={client.website} isLink />
-              </div>
-            </div>
-            <div className="rounded-2xl bg-card card-shadow p-6 lg:col-span-2">
+
+            {/* Ticket Summary */}
+            <div className="rounded-2xl bg-card card-shadow p-6">
               <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3">Resumo de Tickets</h3>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <StatCard icon={<AlertCircle className="h-5 w-5 text-accent-high" />} label="Abertos" value={openDemands.length} />
@@ -154,6 +174,17 @@ export function ClientDetailPage() {
                 <StatCard icon={<CheckCircle className="h-5 w-5 text-accent-low" />} label="Concluídos" value={doneDemands.length} />
                 <StatCard icon={<Clock className="h-5 w-5 text-accent-blocked" />} label="Bloqueados" value={blockedDemands.length} highlight={blockedDemands.length > 0} />
               </div>
+            </div>
+
+            {/* Observations */}
+            <div className="rounded-2xl bg-card card-shadow p-6">
+              <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3">Observações</h3>
+              <Textarea
+                className="min-h-[100px] rounded-xl border-border bg-background text-sm resize-none focus-visible:ring-ring"
+                value={client.notes}
+                onChange={(e) => updateClient(client.id, { notes: e.target.value })}
+                placeholder="Adicione observações sobre este cliente…"
+              />
             </div>
           </div>
         )}
@@ -240,38 +271,43 @@ export function ClientDetailPage() {
           </div>
         )}
 
-        {/* HISTORY TAB */}
-        {activeTab === 'history' && (
-          <div className="max-w-3xl space-y-1">
-            {fullHistory.length === 0 && <p className="text-sm text-muted-foreground py-8 text-center">Nenhum evento no histórico.</p>}
-            {fullHistory.map((event) => (
-              <div key={event.id} className="flex items-start gap-3 p-3 rounded-xl hover:bg-accent/50 transition-colors">
-                <div className={`mt-1.5 h-2.5 w-2.5 rounded-full shrink-0 ${
-                  event.type === 'created' ? 'bg-accent-low' :
-                  event.type === 'archived' ? 'bg-accent-blocked' :
-                  event.type === 'reactivated' ? 'bg-primary' :
-                  'bg-muted-foreground/40'
-                }`} />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-foreground">{event.description}</p>
-                  <p className="text-[11px] text-muted-foreground text-tabular mt-0.5">
-                    {format(new Date(event.timestamp), 'dd/MM/yyyy, HH:mm')} · {event.user}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        {/* RELATIONSHIP TAB */}
+        {activeTab === 'relationship' && (
+          <div className="max-w-3xl space-y-6">
+            {/* Strategic Notes */}
+            <div className="rounded-2xl bg-card card-shadow p-6">
+              <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3">Notas Estratégicas</h3>
+              <Textarea
+                className="min-h-[160px] rounded-xl border-border bg-background text-sm resize-none focus-visible:ring-ring"
+                value={client.strategicNotes}
+                onChange={(e) => updateClient(client.id, { strategicNotes: e.target.value })}
+                placeholder="Registre observações estratégicas, planos de ação, próximos passos…"
+              />
+            </div>
 
-        {/* NOTES TAB */}
-        {activeTab === 'notes' && (
-          <div className="max-w-3xl">
-            <Textarea
-              className="min-h-[240px] rounded-xl border-border bg-background text-sm resize-none focus-visible:ring-ring"
-              value={client.notes}
-              onChange={(e) => updateClient(client.id, { notes: e.target.value })}
-              placeholder="Adicione observações sobre este cliente…"
-            />
+            {/* Timeline */}
+            <div className="rounded-2xl bg-card card-shadow p-6">
+              <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-4">Histórico de Eventos</h3>
+              <div className="space-y-1">
+                {fullHistory.length === 0 && <p className="text-sm text-muted-foreground py-8 text-center">Nenhum evento no histórico.</p>}
+                {fullHistory.map((event) => (
+                  <div key={event.id} className="flex items-start gap-3 p-3 rounded-xl hover:bg-accent/50 transition-colors">
+                    <div className={`mt-1.5 h-2.5 w-2.5 rounded-full shrink-0 ${
+                      event.type === 'created' ? 'bg-accent-low' :
+                      event.type === 'archived' ? 'bg-accent-blocked' :
+                      event.type === 'reactivated' ? 'bg-primary' :
+                      'bg-muted-foreground/40'
+                    }`} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-foreground">{event.description}</p>
+                      <p className="text-[11px] text-muted-foreground text-tabular mt-0.5">
+                        {format(new Date(event.timestamp), 'dd/MM/yyyy, HH:mm')} · {event.user}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         )}
       </div>
@@ -286,6 +322,20 @@ export function ClientDetailPage() {
         onSave={(data) => updateClient(client.id, data)}
         client={client}
       />
+    </div>
+  );
+}
+
+function CSCard({ icon, label, value, badgeClass }: { icon: React.ReactNode; label: string; value: string; badgeClass?: string }) {
+  return (
+    <div className="rounded-2xl bg-card card-shadow p-4 flex flex-col items-center text-center gap-2">
+      {icon}
+      <div className="text-[11px] text-muted-foreground font-medium">{label}</div>
+      {badgeClass ? (
+        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${badgeClass}`}>{value}</span>
+      ) : (
+        <span className="text-sm font-semibold text-foreground">{value}</span>
+      )}
     </div>
   );
 }
