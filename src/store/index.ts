@@ -21,9 +21,9 @@ const DEFAULT_DEMAND_TYPES: DemandType[] = [
 ];
 
 const DEFAULT_CLIENTS: Client[] = [
-  { id: 'c1', name: 'Acme Corp', company: 'Acme Corporation', segment: 'Corporativo', contactName: 'João Silva', email: 'joao@acme.com', phone: '+55 11 99999-0101', website: 'https://acme.com', notes: 'Conta corporativa estratégica', status: 'active', createdAt: '2024-01-15T10:00:00Z', accountManager: 'Jordan Lee' },
-  { id: 'c2', name: 'TechStart', company: 'TechStart Inc', segment: 'Startup', contactName: 'Sara Chen', email: 'sara@techstart.io', phone: '+55 11 99999-0102', website: 'https://techstart.io', notes: 'Startup em crescimento acelerado', status: 'active', createdAt: '2024-02-20T10:00:00Z', accountManager: 'Sam Taylor' },
-  { id: 'c3', name: 'GlobalRetail', company: 'Global Retail Ltda', segment: 'Varejo', contactName: 'Marcos Souza', email: 'marcos@globalretail.com', phone: '+55 11 99999-0103', website: 'https://globalretail.com', notes: 'Grande rede de varejo', status: 'active', createdAt: '2024-03-10T10:00:00Z', accountManager: 'Alex Rivera' },
+  { id: 'c1', name: 'Acme Corp', company: 'Acme Corporation', segment: 'Corporativo', contactName: 'João Silva', email: 'joao@acme.com', phone: '+55 11 99999-0101', website: 'https://acme.com', notes: 'Conta corporativa estratégica', status: 'active', createdAt: '2024-01-15T10:00:00Z', accountManager: 'Jordan Lee', plan: 'enterprise', healthScore: 'healthy', riskLevel: 'low', satisfaction: 5, strategicNotes: 'Conta estratégica com alto potencial de expansão.' },
+  { id: 'c2', name: 'TechStart', company: 'TechStart Inc', segment: 'Startup', contactName: 'Sara Chen', email: 'sara@techstart.io', phone: '+55 11 99999-0102', website: 'https://techstart.io', notes: 'Startup em crescimento acelerado', status: 'active', createdAt: '2024-02-20T10:00:00Z', accountManager: 'Sam Taylor', plan: 'professional', healthScore: 'attention', riskLevel: 'medium', satisfaction: 3, strategicNotes: 'Monitorar engajamento e possível upgrade de plano.' },
+  { id: 'c3', name: 'GlobalRetail', company: 'Global Retail Ltda', segment: 'Varejo', contactName: 'Marcos Souza', email: 'marcos@globalretail.com', phone: '+55 11 99999-0103', website: 'https://globalretail.com', notes: 'Grande rede de varejo', status: 'active', createdAt: '2024-03-10T10:00:00Z', accountManager: 'Alex Rivera', plan: 'starter', healthScore: 'critical', riskLevel: 'high', satisfaction: 2, strategicNotes: 'Risco de churn. Agendar reunião de acompanhamento.' },
 ];
 
 const now = () => new Date().toISOString();
@@ -200,7 +200,7 @@ export const useStore = create<AppState>((set, get) => ({
     set((s) => ({ clients: s.clients.map((c) => c.id === id ? { ...c, ...updates } : c) }));
     if (prev) {
       const changes: Record<string, { from: string; to: string }> = {};
-      const labels: Record<string, string> = { name: 'Nome', company: 'Empresa', segment: 'Segmento', accountManager: 'Responsável', email: 'E-mail', phone: 'Telefone', website: 'Website', status: 'Status', contactName: 'Contato' };
+      const labels: Record<string, string> = { name: 'Nome', company: 'Empresa', segment: 'Segmento', accountManager: 'Responsável', email: 'E-mail', phone: 'Telefone', website: 'Website', status: 'Status', contactName: 'Contato', plan: 'Plano', healthScore: 'Saúde', riskLevel: 'Risco', satisfaction: 'Satisfação', strategicNotes: 'Notas Estratégicas' };
       for (const key of Object.keys(labels)) {
         const k = key as keyof Client;
         if (updates[k] !== undefined && updates[k] !== prev[k]) {

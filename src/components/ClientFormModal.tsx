@@ -15,6 +15,7 @@ interface ClientFormModalProps {
 
 const EMPTY: Omit<Client, 'id' | 'createdAt'> = {
   name: '', company: '', segment: '', contactName: '', email: '', phone: '', website: '', notes: '', status: 'active', accountManager: '',
+  plan: 'starter', healthScore: 'healthy', riskLevel: 'low', satisfaction: 5, strategicNotes: '',
 };
 
 export function ClientFormModal({ open, onClose, onSave, client }: ClientFormModalProps) {
@@ -29,7 +30,7 @@ export function ClientFormModal({ open, onClose, onSave, client }: ClientFormMod
     }
   }, [client, open]);
 
-  const set = (field: string, value: string) => setForm((f) => ({ ...f, [field]: value }));
+  const set = (field: string, value: string | number) => setForm((f) => ({ ...f, [field]: value }));
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,7 +41,7 @@ export function ClientFormModal({ open, onClose, onSave, client }: ClientFormMod
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="sm:max-w-[560px] rounded-2xl">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto rounded-2xl">
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold text-foreground">
             {client ? 'Editar Cliente' : 'Novo Cliente'}
@@ -80,19 +81,70 @@ export function ClientFormModal({ open, onClose, onSave, client }: ClientFormMod
               <Label className="text-xs text-muted-foreground">Website</Label>
               <Input className="h-10 rounded-xl" value={form.website} onChange={(e) => set('website', e.target.value)} placeholder="https://" />
             </div>
-            <div className="space-y-1.5 col-span-2 sm:col-span-1">
-              <Label className="text-xs text-muted-foreground">Status</Label>
-              <Select value={form.status} onValueChange={(v) => set('status', v)}>
-                <SelectTrigger className="h-10 rounded-xl">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="active">Ativo</SelectItem>
-                  <SelectItem value="inactive">Inativo</SelectItem>
-                </SelectContent>
-              </Select>
+          </div>
+
+          {/* CS Fields */}
+          <div className="border-t border-border pt-4">
+            <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3">Gestão da Conta</h4>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label className="text-xs text-muted-foreground">Plano</Label>
+                <Select value={form.plan} onValueChange={(v) => set('plan', v)}>
+                  <SelectTrigger className="h-10 rounded-xl"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="starter">Starter</SelectItem>
+                    <SelectItem value="professional">Professional</SelectItem>
+                    <SelectItem value="enterprise">Enterprise</SelectItem>
+                    <SelectItem value="custom">Personalizado</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs text-muted-foreground">Saúde da Conta</Label>
+                <Select value={form.healthScore} onValueChange={(v) => set('healthScore', v)}>
+                  <SelectTrigger className="h-10 rounded-xl"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="healthy">Saudável</SelectItem>
+                    <SelectItem value="attention">Atenção</SelectItem>
+                    <SelectItem value="critical">Crítico</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs text-muted-foreground">Nível de Risco</Label>
+                <Select value={form.riskLevel} onValueChange={(v) => set('riskLevel', v)}>
+                  <SelectTrigger className="h-10 rounded-xl"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low">Baixo</SelectItem>
+                    <SelectItem value="medium">Médio</SelectItem>
+                    <SelectItem value="high">Alto</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs text-muted-foreground">Satisfação (1-5)</Label>
+                <Select value={String(form.satisfaction)} onValueChange={(v) => set('satisfaction', Number(v))}>
+                  <SelectTrigger className="h-10 rounded-xl"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <SelectItem key={n} value={String(n)}>{'★'.repeat(n)}{'☆'.repeat(5 - n)} ({n})</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5 col-span-2 sm:col-span-1">
+                <Label className="text-xs text-muted-foreground">Status</Label>
+                <Select value={form.status} onValueChange={(v) => set('status', v)}>
+                  <SelectTrigger className="h-10 rounded-xl"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Ativo</SelectItem>
+                    <SelectItem value="inactive">Inativo</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
+
           <div className="space-y-1.5">
             <Label className="text-xs text-muted-foreground">Observações</Label>
             <Textarea className="min-h-[80px] rounded-xl resize-none" value={form.notes} onChange={(e) => set('notes', e.target.value)} placeholder="Notas sobre o cliente…" />
